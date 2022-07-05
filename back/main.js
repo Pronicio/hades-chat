@@ -1,4 +1,5 @@
-const {WebSocket, WebSocketServer} = require('ws')
+const {WebSocket, WebSocketServer} = require('ws');
+const {userDisconnected} = require("./utils/methods");
 
 const {readdirSync} = require('fs');
 const {join} = require("path");
@@ -8,7 +9,10 @@ const server = new WebSocketServer({
     port: process.env.PORT
 })
 
-let clients = []
+const Redis = require('./redis/main')
+const db = new Redis();
+
+db.test()
 
 server.on('listening', () => {
     console.log(`Server listening to ws://127.0.0.1:${server.options.port}`);
@@ -16,59 +20,11 @@ server.on('listening', () => {
 
 server.on('connection', (socket, req) => {
 
-    socket.on('message', (message) => {
-        const data = JSON.parse(message)
+    const file = require(join(__dirname, "./events", 'message'));
+    socket.on('message', (message) => file(message, socket, server));
 
-        if (data.action === "new") {
-            console.log(`✔ New Connection! Client Username: ${data.username}`)
-
-            clients.push({
-                username: data.username,
-                socket
-            })
-
-            sendToEveryone(`--> ${data.username} join the chat !`)
-            sendToEveryone(JSON.stringify({
-                action: "newUser",
-                username: data.username
-            }))
-
-            const usersConnected = clients.map((i) => {
-                return i.username;
-            });
-
-            socket.send(JSON.stringify({
-                action: "usersConnected",
-                usersConnected
-            }))
-        } else if (data.action === "msg") {
-            sendToEveryone(`${data.username}: ${data.msg}`)
-        }
-    })
-
-    socket.on('close', userDisconnected)
-    socket.on('error', userDisconnected)
-
-    function userDisconnected(client) {
-        const user = clients.find(el => {
-            return el.socket._closeCode === client
-        });
-
-        console.log(`❌ Client ${user.username} disconnect`)
-        clients.splice(clients.indexOf(user), 1)
-
-        sendToEveryone(`<-- ${user.username} leave the chat !`)
-        sendToEveryone(JSON.stringify({
-            action: "leaveUser",
-            username: user.username
-        }))
-    }
-
-    function sendToEveryone(msg) {
-        server.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(msg);
-            }
-        });
-    }
+    socket.on('close', (client) => userDisconnected(client))
+    socket.on('error', (client) => userDisconnected(client))
 })
+
+module.exports = server;
