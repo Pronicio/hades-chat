@@ -1,0 +1,16 @@
+{
+  "name": "back",
+  "version": "0.1.0",
+  "description": "The backend of the app.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "nodemon .",
+    "start": "node ."
+  },
+  "author": "Pronicio",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "ws": "^8.8.0"
+  }
+}
