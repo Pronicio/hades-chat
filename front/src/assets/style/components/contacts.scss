@@ -7,6 +7,7 @@ section {
   flex-wrap: nowrap;
   align-items: flex-start;
 
+  overflow: hidden;
   background: #FFFFFF;
 
   .search_bar {
@@ -68,6 +69,7 @@ section {
     .user {
       display: flex;
       padding: 12px 0 12px 12px;
+      width: 22vw;
       cursor: pointer;
 
       img {

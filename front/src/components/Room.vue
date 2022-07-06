@@ -26,9 +26,11 @@
 
 export default {
   name: "Room",
+  props: ['who'],
   data: function () {
     return {
       username: `Unknown-${Math.floor(Math.random() * 100)}`,
+      msg: null,
       messages: [],
       users: []
     }
@@ -63,7 +65,12 @@ export default {
 
       this.msg = null;
     }
-  }
+  },
+  watch: {
+    who(id) {
+      console.log("Id", id)
+    }
+  },
 }
 </script>
 

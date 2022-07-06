@@ -1,6 +1,6 @@
 <template>
-  <Contacts />
-  <Room />
+  <Contacts @changePersons="changePersons" />
+  <Room :who="who"/>
 </template>
 
 <script>
@@ -11,6 +11,16 @@ export default {
   name: "Home",
   components: {
     Room, Contacts
+  },
+  data: function () {
+    return {
+      who: 'global'
+    }
+  },
+  methods: {
+    changePersons(id) {
+      this.who = id
+    }
   }
 }
 </script>
