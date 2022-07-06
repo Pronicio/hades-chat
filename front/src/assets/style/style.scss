@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background: #8BABD8;
+}
+
+#app {
+  background: url('@/assets/images/bg.png');
+  display: flex;
+}

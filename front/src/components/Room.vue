@@ -1,24 +1,25 @@
 <template>
-  <h2>Room :</h2>
-  <div class="messages">
-    <div class="msg" v-for="msg in messages" :key="msg">
-      <p>{{ msg }}</p>
-    </div>
-  </div>
-
-  <form v-on:submit.prevent="sendMessage">
-    <label for="message">Send Message : </label>
-    <input v-model="msg" type="text" id="message" required maxlength="1000" size="10">
-  </form>
-
-  <div>
-    <h3>Users connected :</h3>
-    <div class="users">
-      <div class="user" v-for="user in users" :key="user">
-        <p>{{ user }}</p>
+  <section>
+    <div class="messages">
+      <div class="msg" v-for="msg in messages" :key="msg">
+        <p>{{ msg }}</p>
       </div>
     </div>
-  </div>
+
+    <form v-on:submit.prevent="sendMessage">
+      <label for="message">Send Message : </label>
+      <input v-model="msg" type="text" id="message" required maxlength="1000" size="10">
+    </form>
+
+    <div>
+      <h3>Users connected :</h3>
+      <div class="users">
+        <div class="user" v-for="user in users" :key="user">
+          <p>{{ user }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -65,3 +66,7 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+@import '../assets/style/components/room.scss';
+</style>
