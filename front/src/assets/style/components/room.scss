@@ -1,3 +1,31 @@
 section {
+  form {
+    display: flex;
+    align-items: center;
 
+    position: absolute;
+    bottom: 8vh;
+    right: 4vw;
+
+    background: #FFFFFF;
+    border-radius: 12px;
+
+    input {
+      all: unset;
+
+      height: 3rem;
+      width: 67vw;
+      text-indent: 10px;
+    }
+
+    .send {
+      background: url("@/assets/images/icons/send.svg");
+      background-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+
+      cursor: pointer;
+      margin: 5px 15px;
+    }
+  }
 }

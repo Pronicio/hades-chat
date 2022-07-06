@@ -7,8 +7,8 @@
     </div>
 
     <form v-on:submit.prevent="sendMessage">
-      <label for="message">Send Message : </label>
-      <input v-model="msg" type="text" id="message" required maxlength="1000" size="10">
+      <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" @keydown="autoHeight">
+      <div class="send"></div>
     </form>
 
     <div>
@@ -64,6 +64,10 @@ export default {
       }));
 
       this.msg = null;
+    },
+    autoHeight: function () {
+      const el = document.getElementById('message')
+      el.style.cssText = 'height:' + el.scrollHeight + 'px';
     }
   },
   watch: {
