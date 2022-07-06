@@ -7,14 +7,32 @@ module.exports = class {
         });
 
         this.client.on('error', (err) => console.log('Redis Client Error', err));
-        this.client.connect().then();
+        this.client.connect().then(async () => {
+            await this._reset()
+        });
     }
 
-    //TODO: Finish redis
-    async test() {
-        const value = await this.client.rPush('clients', '{OBJECT}')
-        const result = await this.client.lRange('clients', 0, -1)
-        console.log(result);
-        return result
+    async _reset() {
+        await this.client.del('clients')
+        await this.client.flushAll()
+    }
+
+    async newUser(data) {
+        return await this.client.rPush('clients', JSON.stringify(data))
+    }
+
+    async leaveUser(data) {
+        return await this.client.lRem('clients', 0, data);
+    }
+
+    async usersConnected() {
+        return await this.client.lRange('clients', 0, -1)
     }
 }
+
+/*
+const value = await this.client.rPush('clients', 'Oanqn')
+let result = await this.client.lRange('clients', 0, -1)
+
+await this.client.lRem('clients', 0, 'Oanqn');
+ */

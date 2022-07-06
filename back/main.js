@@ -1,30 +1,68 @@
 const {WebSocket, WebSocketServer} = require('ws');
-const {userDisconnected} = require("./utils/methods");
 
-const {readdirSync} = require('fs');
 const {join} = require("path");
+const Redis = require("./redis/main");
 const dotenv = require('dotenv').config().parsed;
 
-const server = new WebSocketServer({
-    port: process.env.PORT
-})
+class Class {
+    constructor() {
+        this.server = new WebSocketServer({
+            port: process.env.PORT
+        })
 
-const Redis = require('./redis/main')
-const db = new Redis();
+        this.db = new Redis();
 
-db.test()
+        this.server.on('listening', () => {
+            console.log(`Server listening to ws://127.0.0.1:${this.server.options.port}`);
+        })
 
-server.on('listening', () => {
-    console.log(`Server listening to ws://127.0.0.1:${server.options.port}`);
-})
+        this.server.on('connection', (socket, req) => {
+            socket.id = this.getUniqueID();
 
-server.on('connection', (socket, req) => {
+            const file = require(join(__dirname, "./events", 'message'));
+            socket.on('message', (message) => file(message, socket));
 
-    const file = require(join(__dirname, "./events", 'message'));
-    socket.on('message', (message) => file(message, socket, server));
+            socket.on('close', (client) => this.userDisconnected(client, socket))
+            socket.on('error', (client) => this.userDisconnected(client, socket))
+        })
 
-    socket.on('close', (client) => userDisconnected(client))
-    socket.on('error', (client) => userDisconnected(client))
-})
+        this.sendToEveryone = this.sendToEveryone.bind(this)
+    }
 
-module.exports = server;
+    sendToEveryone(msg) {
+        this.server.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(msg);
+            }
+        });
+    }
+
+    async userDisconnected(client, socket) {
+        const usersConnected = await this.db.usersConnected()
+        let user = usersConnected.find(el => {
+            let user = JSON.parse(el)
+            return user.id === socket.id
+        });
+
+        await this.db.leaveUser(user)
+        user = JSON.parse(user)
+
+        console.log(`❌ Client ${user.username} disconnect`)
+
+        this.sendToEveryone(`<-- ${user.username} leave the chat !`)
+        this.sendToEveryone(JSON.stringify({
+            action: "leaveUser",
+            username: user.username
+        }))
+    }
+
+    getUniqueID() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        }
+
+        return s4() + s4() + '-' + s4();
+    };
+}
+
+module.exports = new Class();

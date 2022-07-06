@@ -1,14 +1,14 @@
-const {sendToEveryone} = require("../utils/methods");
+const {db, sendToEveryone} = require("../main");
 
-module.exports = function (message, socket) {
+module.exports = async function (message, socket) {
     const data = JSON.parse(message)
 
     if (data.action === "new") {
         console.log(`✔ New Connection! Client Username: ${data.username}`)
 
-        clients.push({
+        await db.newUser({
             username: data.username,
-            socket
+            id: socket.id
         })
 
         sendToEveryone(`--> ${data.username} join the chat !`)
@@ -17,13 +17,15 @@ module.exports = function (message, socket) {
             username: data.username
         }))
 
-        const usersConnected = clients.map((i) => {
-            return i.username;
+        const usersConnected = await db.usersConnected()
+        const list = usersConnected.map((i) => {
+            let user = JSON.parse(i)
+            return user.username;
         });
 
         socket.send(JSON.stringify({
             action: "usersConnected",
-            usersConnected
+            list
         }))
     } else if (data.action === "msg") {
         sendToEveryone(`${data.username}: ${data.msg}`)

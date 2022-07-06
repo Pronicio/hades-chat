@@ -4,7 +4,7 @@
   "description": "The backend of the app.",
   "main": "main.js",
   "scripts": {
-    "dev": "nodemon .",
+    "back/dev": "nodemon .",
     "start": "node ."
   },
   "author": "Pronicio",

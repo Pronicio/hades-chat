@@ -44,18 +44,9 @@ export default {
     });
 
     this.ws.addEventListener('message', (event) => {
-      if (event.data.includes("usersConnected")) {
-        const data = JSON.parse(event.data)
-        this.users = data.usersConnected
-      }
-      else if (event.data.includes("newUser")) {
-        const data = JSON.parse(event.data)
-        this.users.push(data.username)
-      }
-      else if (event.data.includes("leaveUser")) {
-        const data = JSON.parse(event.data)
-        this.users.splice(this.users.indexOf(data.username), 1)
-      }
+      if (event.data.includes("usersConnected")) this.users = JSON.parse(event.data).list
+      else if (event.data.includes("newUser")) this.users.push(JSON.parse(event.data).username)
+      else if (event.data.includes("leaveUser")) this.users.splice(this.users.indexOf(JSON.parse(event.data).username), 1)
       else {
         this.messages.push(event.data);
       }
