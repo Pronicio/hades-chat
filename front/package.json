@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "string-similarity": "^4.0.4",
     "vue": "^3.2.25",
     "vue-router": "^4.1.1",
     "ws": "^8.8.0"
