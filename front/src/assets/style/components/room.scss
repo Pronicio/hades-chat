@@ -1,4 +1,49 @@
 section {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  .messages {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+
+    width: 73vw;
+    height: 85vh;
+    overflow: auto;
+
+    .msg {
+      background: #FFFFFF;
+      border-radius: 12px;
+      margin: 5px;
+      padding: 4px 12px;
+      font-size: 1.1rem;
+      align-self: flex-start;
+
+      height: auto;
+      max-width: 50vw;
+      /*text-overflow: ellipsis;
+      overflow: hidden;*/
+      word-wrap: break-word;
+
+      p {
+        margin: 0;
+      }
+    }
+
+    .me {
+      align-self: flex-end;
+      background: #78E378;
+    }
+
+    .newUser, .leaveUser {
+      background: rgba(61, 112, 184, 0.6);
+      color: #FFFFFF;
+      align-self: auto;
+    }
+  }
+
   form {
     display: flex;
     align-items: center;
@@ -14,7 +59,7 @@ section {
       all: unset;
 
       height: 3rem;
-      width: 67vw;
+      width: 71vw;
       text-indent: 10px;
     }
 

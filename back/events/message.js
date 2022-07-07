@@ -11,10 +11,10 @@ module.exports = async function (message, socket) {
             id: socket.id
         })
 
-        sendToEveryone(`--> ${data.username} join the chat !`)
         sendToEveryone(JSON.stringify({
             action: "newUser",
-            username: data.username
+            username: data.username,
+            msg: `--> ${data.username} join the chat !`
         }))
 
         const usersConnected = await db.usersConnected()
@@ -28,6 +28,6 @@ module.exports = async function (message, socket) {
             list
         }))
     } else if (data.action === "msg") {
-        sendToEveryone(`${data.username}: ${data.msg}`)
+        sendToEveryone(`${data.username}: ${data.msg}`, socket.id)
     }
 }

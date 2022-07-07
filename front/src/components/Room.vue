@@ -1,8 +1,9 @@
 <template>
   <section>
     <div class="messages">
-      <div class="msg" v-for="msg in messages" :key="msg">
-        <p>{{ msg }}</p>
+      <div :class="`msg ${typeof msg === 'object' ? msg.action : ''}`" v-for="msg in messages" :key="msg">
+        <p v-if="typeof msg === 'object'">{{ msg.msg }}</p>
+        <p v-else>{{ msg }}</p>
       </div>
     </div>
 
@@ -11,6 +12,7 @@
       <div class="send"></div>
     </form>
 
+    <!--
     <div>
       <h3>Users connected :</h3>
       <div class="users">
@@ -19,6 +21,7 @@
         </div>
       </div>
     </div>
+    -->
   </section>
 </template>
 
@@ -48,8 +51,16 @@ export default {
 
     this.ws.addEventListener('message', (event) => {
       if (event.data.includes("usersConnected")) this.users = JSON.parse(event.data).list
-      else if (event.data.includes("newUser")) this.users.push(JSON.parse(event.data).username)
-      else if (event.data.includes("leaveUser")) this.users.splice(this.users.indexOf(JSON.parse(event.data).username), 1)
+      else if (event.data.includes("newUser")) {
+        const data = JSON.parse(event.data);
+        this.messages.push(data);
+        this.users.push(data.username)
+      }
+      else if (event.data.includes("leaveUser")) {
+        const data = JSON.parse(event.data)
+        this.messages.push(data);
+        this.users.splice(this.users.indexOf(data.username), 1)
+      }
       else {
         this.messages.push(event.data);
       }
@@ -57,6 +68,7 @@ export default {
   },
   methods: {
     sendMessage: async function () {
+      this.messages.push({ action: 'me', msg: this.msg});
       this.ws.send(JSON.stringify({
         action: "msg",
         username: this.username,

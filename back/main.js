@@ -29,9 +29,9 @@ class Class {
         this.sendToEveryone = this.sendToEveryone.bind(this)
     }
 
-    sendToEveryone(msg) {
+    sendToEveryone(msg, id) {
         this.server.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
+            if (client.readyState === WebSocket.OPEN && client.id !== id) {
                 client.send(msg);
             }
         });
@@ -49,10 +49,10 @@ class Class {
 
         console.log(`❌ Client ${user.username} disconnect`)
 
-        this.sendToEveryone(`<-- ${user.username} leave the chat !`)
         this.sendToEveryone(JSON.stringify({
             action: "leaveUser",
-            username: user.username
+            username: user.username,
+            msg: `<-- ${user.username} leave the chat !`
         }))
     }
 
