@@ -6,11 +6,14 @@ section {
   .messages {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    /*justify-content: flex-end;*/
     align-items: center;
 
     width: 73vw;
     height: 85vh;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     overflow: auto;
 
     .msg {
@@ -41,6 +44,10 @@ section {
       background: rgba(61, 112, 184, 0.6);
       color: #FFFFFF;
       align-self: auto;
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 

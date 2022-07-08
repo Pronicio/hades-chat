@@ -55,36 +55,64 @@ export default {
         const data = JSON.parse(event.data);
         this.messages.push(data);
         this.users.push(data.username)
-      }
-      else if (event.data.includes("leaveUser")) {
+      } else if (event.data.includes("leaveUser")) {
         const data = JSON.parse(event.data)
         this.messages.push(data);
         this.users.splice(this.users.indexOf(data.username), 1)
-      }
-      else {
+      } else {
         this.messages.push(event.data);
       }
     });
+
+    /*
+    const out = document.getElementsByClassName('messages')[0]
+    setInterval(function () {
+      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
+      console.log(isScrolledToBottom);
+      console.log(out.scrollHeight - out.clientHeight, out.scrollTop + 1);
+
+      if (isScrolledToBottom)
+        out.scrollTop = out.scrollHeight - out.clientHeight;
+        console.log(out.scrollTop);
+    }, 1000);
+     */
+
   },
   methods: {
     sendMessage: async function () {
-      this.messages.push({ action: 'me', msg: this.msg});
-      this.ws.send(JSON.stringify({
+      this.messages.push({action: 'me', msg: this.msg});
+      await this.ws.send(JSON.stringify({
         action: "msg",
         username: this.username,
         msg: this.msg
       }));
 
+      this.scrollToBottom(true)
       this.msg = null;
     },
     autoHeight: function () {
       const el = document.getElementById('message')
       el.style.cssText = 'height:' + el.scrollHeight + 'px';
+    },
+    scrollToBottom: function (pass = false) {
+      const out = document.getElementsByClassName('messages')[0]
+      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= (out.scrollTop + 200) + 1
+
+      if (pass || isScrolledToBottom) {
+        out.scrollTop = out.scrollHeight - out.clientHeight;
+      }
     }
   },
   watch: {
     who(id) {
       console.log("Id", id)
+    },
+    messages: {
+      async handler() {
+        await this.$nextTick()
+        this.scrollToBottom()
+      },
+      deep: true
     }
   },
 }
