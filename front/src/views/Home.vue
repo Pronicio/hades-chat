@@ -17,6 +17,9 @@ export default {
       who: 'global'
     }
   },
+  beforeMount: function() {
+    let auth = localStorage.getItem('token')
+  },
   methods: {
     changePersons(id) {
       this.who = id

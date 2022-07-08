@@ -4,7 +4,6 @@ module.exports = async function (message, socket) {
     const data = JSON.parse(message)
 
     if (data.action === "new") {
-        console.log(`✔ New Connection! Client Username: ${data.username}`)
 
         await db.newUser({
             username: data.username,
