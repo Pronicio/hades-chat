@@ -1,4 +1,4 @@
-const {db, sendToEveryone} = require("../main");
+const { db, sendToEveryone } = require("../main");
 
 module.exports = async function (message, socket) {
     const data = JSON.parse(message)
@@ -17,6 +17,7 @@ module.exports = async function (message, socket) {
         }))
 
         const usersConnected = await db.usersConnected()
+        console.log(usersConnected);
         const list = usersConnected.map((i) => {
             let user = JSON.parse(i)
             return user.username;

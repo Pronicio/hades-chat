@@ -1,7 +1,7 @@
-const {WebSocket, WebSocketServer} = require('ws');
+const { WebSocket, WebSocketServer } = require('ws');
 
-const {join} = require("path");
-const crypto = require('crypto');
+const { join } = require("path");
+const { randomUUID } = require('crypto');
 const Redis = require("./redis/main");
 const dotenv = require('dotenv').config().parsed;
 
@@ -18,7 +18,7 @@ class Class {
         })
 
         this.server.on('connection', (socket, req) => {
-            socket.id = crypto.randomUUID();
+            socket.id = randomUUID();
 
             const file = require(join(__dirname, "./events", 'message'));
             socket.on('message', (message) => file(message, socket));
