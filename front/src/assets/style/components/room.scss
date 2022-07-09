@@ -10,7 +10,7 @@ section {
     align-items: center;
 
     width: 73vw;
-    height: 85vh;
+    height: 87vh;
 
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -49,6 +49,10 @@ section {
     &::-webkit-scrollbar {
       display: none;
     }
+
+    @media (max-width: $mobile) {
+      width: 97vw;
+    }
   }
 
   form {
@@ -61,6 +65,7 @@ section {
 
     background: #FFFFFF;
     border-radius: 12px;
+    z-index: 5;
 
     input {
       all: unset;
@@ -78,6 +83,10 @@ section {
 
       cursor: pointer;
       margin: 5px 15px;
+    }
+
+    @media (max-width: $mobile) {
+      right: auto;
     }
   }
 }
