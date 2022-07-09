@@ -1,6 +1,6 @@
-const { createClient } = require("redis");
+import { createClient } from "redis";
 
-module.exports = class {
+export default class {
     constructor() {
         this.client = createClient({
             url: process.env.REDIS_URI
@@ -29,10 +29,3 @@ module.exports = class {
         return await this.client.lRange('clients', 0, -1)
     }
 }
-
-/*
-const value = await this.client.rPush('clients', 'Oanqn')
-let result = await this.client.lRange('clients', 0, -1)
-
-await this.client.lRem('clients', 0, 'Oanqn');
- */

@@ -9,6 +9,7 @@
   },
   "author": "Pronicio",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "dotenv": "^16.0.1",
     "redis": "^4.1.1",

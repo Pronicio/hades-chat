@@ -1,6 +1,6 @@
-const { db, sendToEveryone } = require("../main");
+import { db, sendToEveryone } from "../main.js";
 
-module.exports = async function (message, socket) {
+async function messageEvent(message, socket) {
     const data = JSON.parse(message)
 
     if (data.action === "new") {
@@ -17,7 +17,6 @@ module.exports = async function (message, socket) {
         }))
 
         const usersConnected = await db.usersConnected()
-        console.log(usersConnected);
         const list = usersConnected.map((i) => {
             let user = JSON.parse(i)
             return user.username;
@@ -31,3 +30,5 @@ module.exports = async function (message, socket) {
         sendToEveryone(`${data.username}: ${data.msg}`, socket.id)
     }
 }
+
+export { messageEvent }

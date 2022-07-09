@@ -1,9 +1,9 @@
-const { WebSocket, WebSocketServer } = require('ws');
+import { WebSocket, WebSocketServer } from 'ws';
+import { messageEvent } from './events/message.js'
 
-const { join } = require("path");
-const { randomUUID } = require('crypto');
-const Redis = require("./redis/main");
-const dotenv = require('dotenv').config().parsed;
+import { randomUUID } from 'crypto';
+import Redis from "./redis/main.js";
+import dotenv from 'dotenv/config';
 
 class Class {
     constructor() {
@@ -20,9 +20,7 @@ class Class {
         this.server.on('connection', (socket, req) => {
             socket.id = randomUUID();
 
-            const file = require(join(__dirname, "./events", 'message'));
-            socket.on('message', (message) => file(message, socket));
-
+            socket.on('message', (message) => messageEvent(message, socket));
             socket.on('close', (client) => this.userDisconnected(client, socket))
             socket.on('error', (client) => this.userDisconnected(client, socket))
         })
@@ -56,4 +54,4 @@ class Class {
     }
 }
 
-module.exports = new Class();
+export const { db, sendToEveryone } = new Class()
