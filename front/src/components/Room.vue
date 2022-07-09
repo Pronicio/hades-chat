@@ -27,9 +27,11 @@
 
 <script>
 
+import { AES, enc } from 'crypto-js';
+
 export default {
   name: "Room",
-  props: ['who'],
+  props: [ 'who' ],
   data: function () {
     return {
       username: `Unknown-${Math.floor(Math.random() * 100)}`,
@@ -50,37 +52,23 @@ export default {
     });
 
     this.ws.addEventListener('message', (event) => {
-      if (event.data.includes("usersConnected")) this.users = JSON.parse(event.data).list
-      else if (event.data.includes("newUser")) {
+      if (event.data.includes("newUser") || event.data.includes("leaveUser")) {
         const data = JSON.parse(event.data);
         this.messages.push(data);
-        this.users.push(data.username)
-      } else if (event.data.includes("leaveUser")) {
-        const data = JSON.parse(event.data)
-        this.messages.push(data);
-        this.users.splice(this.users.indexOf(data.username), 1)
       } else {
         this.messages.push(event.data);
       }
     });
 
-    /*
-    const out = document.getElementsByClassName('messages')[0]
-    setInterval(function () {
-      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 1;
-      console.log(isScrolledToBottom);
-      console.log(out.scrollHeight - out.clientHeight, out.scrollTop + 1);
+    const encrypted = AES.encrypt("Message", "Secret Passphrase");
+    const decrypted = AES.decrypt(encrypted, "Secret Passphrase");
 
-      if (isScrolledToBottom)
-        out.scrollTop = out.scrollHeight - out.clientHeight;
-        console.log(out.scrollTop);
-    }, 1000);
-     */
+    console.log(decrypted.toString(enc.Utf8))
 
   },
   methods: {
     sendMessage: async function () {
-      this.messages.push({action: 'me', msg: this.msg});
+      this.messages.push({ action: 'me', msg: this.msg });
       await this.ws.send(JSON.stringify({
         action: "msg",
         username: this.username,

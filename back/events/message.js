@@ -16,16 +16,6 @@ async function messageEvent(message, socket) {
             msg: `--> ${data.username} join the chat !`
         }))
 
-        const usersConnected = await db.usersConnected()
-        const list = usersConnected.map((i) => {
-            let user = JSON.parse(i)
-            return user.username;
-        });
-
-        socket.send(JSON.stringify({
-            action: "usersConnected",
-            list
-        }))
     } else if (data.action === "msg") {
         sendToEveryone(`${data.username}: ${data.msg}`, socket.id)
     }
