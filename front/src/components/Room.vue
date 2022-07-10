@@ -24,6 +24,7 @@ export default {
   data: function () {
     return {
       username: localStorage.getItem('name'),
+      id: localStorage.getItem('id'),
       msg: null,
       messages: [],
       users: []
@@ -36,7 +37,8 @@ export default {
     this.ws.addEventListener('open', () => {
       ws.send(JSON.stringify({
         action: "new",
-        username: this.username
+        username: this.username,
+        id: this.id,
       }));
     });
 
@@ -44,6 +46,9 @@ export default {
       if (event.data.includes("newUser") || event.data.includes("leaveUser")) {
         const data = JSON.parse(event.data);
         this.messages.push(data);
+      } else if (event.data.includes("newId")) {
+        const data = JSON.parse(event.data);
+        localStorage.setItem('id', data.id)
       } else {
         this.messages.push(event.data);
       }
@@ -60,7 +65,9 @@ export default {
       this.messages.push({ action: 'me', msg: this.msg });
       await this.ws.send(JSON.stringify({
         action: "msg",
+        to: this.who,
         username: this.username,
+        id: this.id,
         msg: this.msg
       }));
 

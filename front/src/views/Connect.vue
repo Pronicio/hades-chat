@@ -26,7 +26,7 @@ export default {
   methods: {
     setName() {
       if (!this.name) return false
-      if (this.name.length <= 4 || this.name.length > 18) {
+      if (this.name.length < 4 || this.name.length > 18) {
         return false
       }
 

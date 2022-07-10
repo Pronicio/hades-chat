@@ -1,7 +1,20 @@
-import { db, sendToEveryone } from "../main.js";
+import { db, sendToEveryone, sendToSomeone } from "../main.js";
+import { isUUID, chatbot } from "../utils/methods.js";
+import { randomUUID } from 'crypto';
 
 async function messageEvent(message, socket) {
     const data = JSON.parse(message)
+
+    if (data.id && isUUID(data.id)) {
+        socket.id = data.id
+    } else {
+        socket.id = randomUUID();
+
+        socket.send(JSON.stringify({
+            action: "newId",
+            id: socket.id
+        }))
+    }
 
     if (data.action === "new") {
 
@@ -17,7 +30,9 @@ async function messageEvent(message, socket) {
         }))
 
     } else if (data.action === "msg") {
-        sendToEveryone(`${data.username}: ${data.msg}`, socket.id)
+        if (data.to === 'global') return sendToEveryone(`${data.username}: ${data.msg}`, socket.id);
+        if (data.to === 'chatbot') socket.send(await chatbot(data.msg, socket.id))
+        await sendToSomeone(data.msg, data.to)
     }
 }
 

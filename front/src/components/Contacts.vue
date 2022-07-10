@@ -17,6 +17,10 @@
           <p>{{ user.last.msg }}</p>
         </div>
       </div>
+      <div class="user">
+        <img src="../assets/images/icons/add.svg" alt="Add someone" width="48"/>
+        <h3>Add someone</h3>
+      </div>
     </div>
   </section>
 </template>
@@ -34,6 +38,11 @@ export default {
         {
           username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png", last: {
             msg: "Hello Everyone !", time: "Just now"
+          }
+        },
+        {
+          username: "Hadès Bot", id: "chatbot", picture: "https://i.imgur.com/nPCPfmM.png", last: {
+            msg: "...", time: "Just now"
           }
         },
         {

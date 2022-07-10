@@ -1,7 +1,6 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import { messageEvent } from './events/message.js'
 
-import { randomUUID } from 'crypto';
 import Redis from "./redis/main.js";
 import dotenv from 'dotenv/config';
 
@@ -18,19 +17,26 @@ class Class {
         })
 
         this.server.on('connection', (socket, req) => {
-            socket.id = randomUUID();
-
             socket.on('message', (message) => messageEvent(message, socket));
             socket.on('close', (client) => this.userDisconnected(client, socket))
             socket.on('error', (client) => this.userDisconnected(client, socket))
         })
 
         this.sendToEveryone = this.sendToEveryone.bind(this)
+        this.sendToSomeone = this.sendToSomeone.bind(this)
     }
 
     sendToEveryone(msg, id) {
         this.server.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN && client.id !== id) {
+                client.send(msg);
+            }
+        });
+    }
+
+    async sendToSomeone(msg, id) {
+        this.server.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN && client.id === id) {
                 client.send(msg);
             }
         });
@@ -54,4 +60,4 @@ class Class {
     }
 }
 
-export const { db, sendToEveryone } = new Class()
+export const { db, sendToEveryone, sendToSomeone } = new Class()
