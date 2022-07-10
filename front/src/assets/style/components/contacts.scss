@@ -65,6 +65,7 @@ section {
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
+    overflow: auto;
 
     .user {
       display: flex;
