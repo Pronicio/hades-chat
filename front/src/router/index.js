@@ -8,7 +8,22 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: () => import('../views/Home.vue')
+        component: () => import('../views/Home.vue'),
+        beforeEnter: (to, from, next) => {
+            let auth = localStorage.getItem('name')
+            if (!auth) return next({ name: 'Connect' })
+            next()
+        }
+    },
+    {
+        path: '/connect',
+        name: 'Connect',
+        component: () => import('../views/Connect.vue'),
+        beforeEnter: (to, from, next) => {
+            let auth = localStorage.getItem('name')
+            if (auth) return next({ name: 'Home' })
+            next()
+        }
     },
 ]
 

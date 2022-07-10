@@ -11,17 +11,6 @@
       <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" @keydown="autoHeight">
       <div class="send"></div>
     </form>
-
-    <!--
-    <div>
-      <h3>Users connected :</h3>
-      <div class="users">
-        <div class="user" v-for="user in users" :key="user">
-          <p>{{ user }}</p>
-        </div>
-      </div>
-    </div>
-    -->
   </section>
 </template>
 
@@ -34,7 +23,7 @@ export default {
   props: [ 'who' ],
   data: function () {
     return {
-      username: `Unknown-${Math.floor(Math.random() * 100)}`,
+      username: localStorage.getItem('name'),
       msg: null,
       messages: [],
       users: []
