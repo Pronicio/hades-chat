@@ -23,7 +23,6 @@ export default {
   props: [ 'who' ],
   data: function () {
     return {
-      username: localStorage.getItem('name'),
       username: localStorage.getItem('name') || sessionStorage.getItem('name'),
       id: localStorage.getItem('id'),
       msg: null,
