@@ -1,6 +1,6 @@
 <template>
   <Contacts @changePersons="changePersons" />
-  <Room :who="who"/>
+  <Room :who="who" :details="details"/>
 </template>
 
 <script>
@@ -14,12 +14,18 @@ export default {
   },
   data: function () {
     return {
-      who: 'global'
+      who: 'global',
+      details: {
+        username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png", last: {
+          msg: "Hello Everyone !", time: "Just now"
+        }
+      }
     }
   },
   methods: {
-    changePersons(id) {
-      this.who = id
+    changePersons(id, details) {
+      this.who = id;
+      this.details = details
     }
   }
 }

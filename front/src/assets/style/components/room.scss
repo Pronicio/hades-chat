@@ -1,5 +1,11 @@
 section {
   display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.page {
+  display: flex;
   justify-content: center;
   width: 100%;
 
@@ -10,7 +16,7 @@ section {
     align-items: center;
 
     width: 73vw;
-    height: 85vh;
+    height: 75.5vh;
 
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -61,7 +67,7 @@ section {
 
     position: absolute;
     bottom: 8vh;
-    right: 4vw;
+    right: 3vw;
 
     background: #FFFFFF;
     border-radius: 12px;

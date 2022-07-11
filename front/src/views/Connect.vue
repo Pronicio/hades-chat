@@ -33,7 +33,7 @@ export default {
       const storage = this.save_session ? localStorage : sessionStorage
 
       storage.setItem('name', this.name)
-      storage.setItem('save_session', this.save_session)
+      if (this.save_session) storage.setItem('save_session', this.save_session)
       this.$router.push('/')
     }
   }

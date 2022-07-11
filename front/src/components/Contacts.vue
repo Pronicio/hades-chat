@@ -93,7 +93,9 @@ export default {
       const forward = document.getElementById(this.current);
       forward.classList.toggle("selected");
 
-      this.$emit('changePersons', id)
+      const details = this.contacts.find(el => el.id === id);
+
+      this.$emit('changePersons', id, details)
       this.current = id
     }
   }

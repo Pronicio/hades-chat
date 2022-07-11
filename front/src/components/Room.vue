@@ -1,26 +1,31 @@
 <template>
   <section>
-    <div class="messages">
-      <div :class="`msg ${typeof msg === 'object' ? msg.action : ''}`" v-for="msg in messages" :key="msg">
-        <p v-if="typeof msg === 'object'">{{ msg.msg }}</p>
-        <p v-else>{{ msg }}</p>
+    <Headbar :details="details" />
+    <div class="page">
+      <div class="messages">
+        <div :class="`msg ${typeof msg === 'object' ? msg.action : ''}`" v-for="msg in messages" :key="msg">
+          <p v-if="typeof msg === 'object'">{{ msg.msg }}</p>
+          <p v-else>{{ msg }}</p>
+        </div>
       </div>
-    </div>
 
-    <form v-on:submit.prevent="sendMessage">
-      <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" @keydown="autoHeight">
-      <div class="send"></div>
-    </form>
+      <form v-on:submit.prevent="sendMessage">
+        <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" @keydown="autoHeight">
+        <div class="send"></div>
+      </form>
+    </div>
   </section>
 </template>
 
 <script>
 
 import { AES, enc } from 'crypto-js';
+import Headbar from "./Headbar.vue";
 
 export default {
   name: "Room",
-  props: [ 'who' ],
+  components: { Headbar },
+  props: [ 'who', 'details' ],
   data: function () {
     return {
       username: localStorage.getItem('name') || sessionStorage.getItem('name'),
