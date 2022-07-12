@@ -1,6 +1,6 @@
 <template>
   <section>
-    <Headbar :details="details" />
+    <Headbar :details="details"/>
     <div class="page">
       <div class="messages">
         <div :class="`msg ${typeof msg === 'object' ? msg.action : ''}`" v-for="msg in messages" :key="msg">
@@ -18,8 +18,6 @@
 </template>
 
 <script>
-
-import { AES, enc } from 'crypto-js';
 import Headbar from "./Headbar.vue";
 
 export default {
@@ -57,13 +55,12 @@ export default {
       } else {
         this.messages.push(event.data);
       }
+      this.saveMessages(this.who)
     });
 
-    const encrypted = AES.encrypt("Message", "Secret Passphrase");
-    const decrypted = AES.decrypt(encrypted, "Secret Passphrase");
-
-    console.log(decrypted.toString(enc.Utf8))
-
+    const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
+    const msgInCache = storage.getItem(this.who)
+    if (msgInCache) this.messages = JSON.parse(msgInCache)
   },
   methods: {
     sendMessage: async function () {
@@ -78,6 +75,7 @@ export default {
 
       this.scrollToBottom(true)
       this.msg = null;
+      this.saveMessages(this.who)
     },
     autoHeight: function () {
       const el = document.getElementById('message')
@@ -90,11 +88,21 @@ export default {
       if (pass || isScrolledToBottom) {
         out.scrollTop = out.scrollHeight - out.clientHeight;
       }
+    },
+    saveMessages: function (id) {
+      const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
+      storage.setItem(id, JSON.stringify(this.messages))
     }
   },
   watch: {
-    who(id) {
-      console.log("Id", id)
+    who(id, previousUser) {
+      const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
+      this.saveMessages(previousUser)
+
+      const data = storage.getItem(id)
+      if (!data) return this.messages = [];
+
+      this.messages = JSON.parse(data)
     },
     messages: {
       async handler() {

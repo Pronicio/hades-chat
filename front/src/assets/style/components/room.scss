@@ -16,7 +16,7 @@ section {
     align-items: center;
 
     width: 73vw;
-    height: 75.5vh;
+    height: 79.5vh;
 
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -57,6 +57,7 @@ section {
     }
 
     @media (max-width: $mobile) {
+      height: 81.5vh;
       width: 97vw;
     }
   }
@@ -92,6 +93,7 @@ section {
     }
 
     @media (max-width: $mobile) {
+      bottom: 4vh;
       right: auto;
     }
   }
