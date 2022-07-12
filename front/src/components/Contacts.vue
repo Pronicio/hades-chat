@@ -1,4 +1,5 @@
 <template>
+  <component :is="addUserModal" @addUser="addUser"></component>
   <section>
     <div class="search_bar">
       <div id="burger"></div>
@@ -17,7 +18,7 @@
           <p>{{ user.last.msg }}</p>
         </div>
       </div>
-      <div class="user">
+      <div class="user" @click="addUserActiveModal">
         <img src="../assets/images/icons/add.svg" alt="Add someone" width="48"/>
         <h3>Add someone</h3>
       </div>
@@ -27,9 +28,11 @@
 
 <script>
 import stringSimilarity from "string-similarity";
+import AddUser from "./AddUser.vue";
 
 export default {
   name: "Contacts",
+  components: { AddUser },
   data: function () {
     return {
       searchInput: null,
@@ -75,7 +78,8 @@ export default {
             msg: "Your projects are due at 8pm sharp! Otherwise you'll have to deal with me!", time: "Yesterday"
           }
         }
-      ]
+      ],
+      addUserModal: null
     }
   },
   methods: {
@@ -97,6 +101,12 @@ export default {
 
       this.$emit('changePersons', id, details)
       this.current = id
+    },
+    addUserActiveModal: function () {
+      this.addUserModal = "AddUser"
+    },
+    addUser: function (id) {
+      console.log(id)
     }
   }
 }
