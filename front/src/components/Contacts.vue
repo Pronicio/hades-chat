@@ -106,6 +106,7 @@ export default {
       this.addUserModal = "AddUser"
     },
     addUser: function (id) {
+      this.addUserModal = null
       console.log(id)
     }
   }
