@@ -28,6 +28,7 @@ export default {
     return {
       username: localStorage.getItem('name') || sessionStorage.getItem('name'),
       id: localStorage.getItem('id'),
+      token: localStorage.getItem('token'),
       msg: null,
       messages: [],
       users: []
@@ -42,6 +43,7 @@ export default {
         action: "new",
         username: this.username,
         id: this.id,
+        token: this.token
       }));
     });
 
@@ -52,6 +54,7 @@ export default {
       } else if (event.data.includes("newId")) {
         const data = JSON.parse(event.data);
         localStorage.setItem('id', data.id)
+        localStorage.setItem('token', data.token)
       } else {
         this.messages.push(event.data);
       }
