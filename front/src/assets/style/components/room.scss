@@ -16,7 +16,7 @@ section {
     align-items: center;
 
     width: 73vw;
-    height: 79.5vh;
+    height: calc(100vh - 3rem - 8vh - 4.3rem);
 
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -31,7 +31,7 @@ section {
       align-self: flex-start;
 
       height: auto;
-      max-width: 50vw;
+      max-width: 60vw;
       /*text-overflow: ellipsis;
       overflow: hidden;*/
       word-wrap: break-word;
@@ -57,7 +57,7 @@ section {
     }
 
     @media (max-width: $mobile) {
-      height: 81.5vh;
+      height: calc(100vh - 3rem - 4vh - 4.3rem);
       width: 97vw;
     }
   }
@@ -80,6 +80,10 @@ section {
       height: 3rem;
       width: 71vw;
       text-indent: 10px;
+
+      @media (max-width: $mobile) {
+        width: 81vw;
+      }
     }
 
     .send {
