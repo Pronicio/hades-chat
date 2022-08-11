@@ -22,7 +22,11 @@ export default class {
     }
 
     async leaveUser(data) {
-        return await this.client.lRem('clients', 0, data);
+        try {
+            return await this.client.lRem('clients', 0, data);
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     async usersConnected() {

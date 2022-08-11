@@ -4,6 +4,9 @@ import { messageEvent } from './events/message.js'
 import Redis from "./redis/main.js";
 import dotenv from 'dotenv/config';
 
+import { lookup } from 'dns'
+import { hostname } from 'os'
+
 class Class {
     constructor() {
         this.server = new WebSocketServer({
@@ -13,13 +16,18 @@ class Class {
         this.db = new Redis();
 
         this.server.on('listening', () => {
-            console.log(`Server listening to ws://127.0.0.1:${this.server.options.port}`);
+            const serverPort = this.server.options.port
+
+            lookup(hostname(), function (err, add, fam) {
+                console.log(`Server listening to ws://${add}:${serverPort}`);
+            })
         })
 
         this.server.on('connection', (socket, req) => {
             socket.on('message', (message) => messageEvent(message, socket));
             socket.on('close', (client) => this.userDisconnected(client, socket))
             socket.on('error', (client) => this.userDisconnected(client, socket))
+            socket.on('wsClientError', (error, client) => this.userDisconnected(client, socket))
         })
 
         this.sendToEveryone = this.sendToEveryone.bind(this)
@@ -50,7 +58,14 @@ class Class {
         });
 
         await this.db.leaveUser(user)
-        user = JSON.parse(user)
+
+        try {
+            user = JSON.parse(user)
+        } catch (e) {
+            console.error(e)
+        }
+
+        if (!user) return false
 
         this.sendToEveryone(JSON.stringify({
             action: "leaveUser",

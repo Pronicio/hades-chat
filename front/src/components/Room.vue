@@ -27,15 +27,15 @@ export default {
   data: function () {
     return {
       username: localStorage.getItem('name') || sessionStorage.getItem('name'),
-      id: localStorage.getItem('id'),
-      token: localStorage.getItem('token'),
+      id: localStorage.getItem('id') || sessionStorage.getItem('id'),
+      token: localStorage.getItem('token') || sessionStorage.getItem('token'),
       msg: null,
       messages: [],
       users: []
     }
   },
   mounted: function () {
-    const ws = new WebSocket('ws://127.0.0.1:9000');
+    const ws = new WebSocket(import.meta.env.VITE_WS_URI);
     this.ws = ws;
 
     this.ws.addEventListener('open', () => {
@@ -52,9 +52,10 @@ export default {
         const data = JSON.parse(event.data);
         this.messages.push(data);
       } else if (event.data.includes("newId")) {
+        const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
         const data = JSON.parse(event.data);
-        localStorage.setItem('id', data.id)
-        localStorage.setItem('token', data.token)
+        this.id = data.id; this.token = data.token;
+        storage.setItem('id', data.id); storage.setItem('token', data.token);
       } else {
         this.messages.push(event.data);
       }
@@ -73,6 +74,7 @@ export default {
         to: this.who,
         username: this.username,
         id: this.id,
+        token: this.token,
         msg: this.msg
       }));
 
