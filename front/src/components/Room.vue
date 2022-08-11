@@ -10,8 +10,8 @@
       </div>
 
       <form v-on:submit.prevent="sendMessage">
-        <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" @keydown="autoHeight">
-        <div class="send"></div>
+        <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" minlength="1" maxlength="110">
+        <div class="send" @click="sendMessage"></div>
       </form>
     </div>
   </section>
@@ -81,10 +81,6 @@ export default {
       this.scrollToBottom(true)
       this.msg = null;
       this.saveMessages(this.who)
-    },
-    autoHeight: function () {
-      const el = document.getElementById('message')
-      el.style.cssText = 'height:' + el.scrollHeight + 'px';
     },
     scrollToBottom: function (pass = false) {
       const out = document.getElementsByClassName('messages')[0]
