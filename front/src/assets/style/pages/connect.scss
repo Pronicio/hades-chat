@@ -1,4 +1,7 @@
 section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   .modal {
     display: flex;
@@ -63,6 +66,16 @@ section {
           background-color: #3e8e41;
         }
       }
+    }
+
+    .picture {
+      width: 14.375rem;
+      height: 14.375rem;
+
+      cursor: pointer;
+      margin-left: 2rem;
+      border-radius: 2.5rem;
+      border: 1px solid #888;
     }
   }
 }
