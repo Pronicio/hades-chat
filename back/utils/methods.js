@@ -1,4 +1,6 @@
 import axios from 'axios'
+import FormData from 'form-data';
+import { readFileSync } from 'fs'
 
 export function isUUID(uuid) {
     let s = "" + uuid;
@@ -13,4 +15,24 @@ export async function chatbot(msg, id) {
     } catch (e) {
         console.error(e)
     }
+}
+
+export async function uploadImage(b64) {
+    const data = new FormData();
+    data.append('image', b64);
+
+    const config = {
+        method: 'post',
+        url: 'https://api.imgur.com/3/image',
+        headers: {
+            'Authorization': `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+            ...data.getHeaders()
+        },
+        data : data
+    };
+
+    const req = await axios(config)
+        .catch(function (error) { console.log(error); });
+
+    return req.data.data.link
 }

@@ -1,14 +1,21 @@
+import Fastify from 'fastify'
+import CORS from '@fastify/cors'
+import multipart from '@fastify/multipart'
+
 import { WebSocket, WebSocketServer } from 'ws';
 import { messageEvent } from './events/message.js'
 
 import Redis from "./redis/main.js";
 import dotenv from 'dotenv/config';
+import { uploadImage } from "./utils/methods.js";
 
 import { lookup } from 'dns'
 import { hostname } from 'os'
 
 class Class {
     constructor() {
+        this.fastify = Fastify({ logger: false })
+
         this.server = new WebSocketServer({
             port: process.env.PORT
         })
@@ -32,6 +39,24 @@ class Class {
 
         this.sendToEveryone = this.sendToEveryone.bind(this)
         this.sendToSomeone = this.sendToSomeone.bind(this)
+
+        this.handleRoutes()
+
+        this.fastify.register(CORS, {
+            origin: "*",
+            methods: [ 'GET', 'POST' ],
+            credentials: true
+        });
+
+        this.fastify.register(multipart)
+
+        this.fastify.listen({ port: process.env.API_PORT, host: "0.0.0.0" }, (err, address) => {
+            if (err) {
+                console.error(err)
+                process.exit(1)
+            }
+            console.log(`Fastify is on : ${address}`)
+        })
     }
 
     sendToEveryone(msg, id) {
@@ -72,6 +97,21 @@ class Class {
             username: user.username,
             msg: `<-- ${user.username} leave the chat !`
         }))
+    }
+
+    handleRoutes() {
+        this.fastify.route({
+            method: 'POST',
+            url: '/upload_image',
+            handler: async (req, rep) => {
+                const data = await req.file()
+
+                const b64 = (await data.toBuffer()).toString('base64')
+                const link = await uploadImage(b64)
+
+                rep.send({ success: true, link })
+            }
+        })
     }
 }
 
