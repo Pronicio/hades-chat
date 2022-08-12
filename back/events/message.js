@@ -29,6 +29,33 @@ async function messageEvent(message, socket) {
 
     if (data.action === "new") {
 
+        if (!data.username.match('#\\d{4}')) {
+            setNewName(data.username)
+        } else {
+            const usersConnected = await db.usersConnected()
+            let tagAlreadyExist = usersConnected.find(el => {
+                let user = JSON.parse(el)
+                return user.username === data.username
+            });
+            if (tagAlreadyExist) {
+                let tag = data.username.match('#\\d{4}', '')[0]
+                let without = data.username.replace(tag, '')
+
+                setNewName(without)
+            }
+        }
+
+        function setNewName(name) {
+            const discriminator = Math.floor(1000 + Math.random() * 9000);
+
+            data.username = `${name}#${discriminator}`
+
+            socket.send(JSON.stringify({
+                action: "newName",
+                name: data.username
+            }))
+        }
+
         await db.newUser({
             username: data.username,
             id: socket.id

@@ -56,6 +56,11 @@ export default {
         const data = JSON.parse(event.data);
         this.id = data.id; this.token = data.token;
         storage.setItem('id', data.id); storage.setItem('token', data.token);
+      } else if (event.data.includes("newName")) {
+        const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
+        const data = JSON.parse(event.data);
+        this.username = data.name;
+        storage.setItem('name', data.name);
       } else {
         this.messages.push(event.data);
       }
