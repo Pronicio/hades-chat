@@ -77,5 +77,14 @@ section {
       border-radius: 2.5rem;
       border: 1px solid #888;
     }
+
+    @media (max-width: 565px) {
+      flex-direction: column;
+
+      .picture {
+        margin-top: 2rem;
+        margin-left: 0;
+      }
+    }
   }
 }
