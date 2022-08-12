@@ -2,7 +2,7 @@
   <section class="pop">
     <div class="modal">
       <form v-on:submit.prevent="addUser" class="content">
-        <h1>What is the ID of the user ?</h1>
+        <h1>What is the name of the user ?</h1>
         <input type="text" id="name" name="name" required minlength="36" v-model="id">
         <button @click="addUser">Validate !</button>
       </form>
@@ -11,7 +11,6 @@
 </template>
 
 <script>
-import { isUUID } from "../utils/methods";
 
 export default {
   name: "AddUser",
@@ -22,8 +21,7 @@ export default {
   },
   methods: {
     addUser: function () {
-      const valid = isUUID(this.id)
-      if (valid) this.$emit('addUser', this.id)
+      this.$emit('addUser', this.id)
     }
   }
 }
