@@ -30,7 +30,7 @@ export default {
   },
   mounted() {
     const dropzone = new Dropzone(".picture", {
-      url: "http://192.168.1.14:9001/upload_image",
+      url: `${import.meta.env.VITE_API_URI}/upload_image`,
       uploadMultiple: false,
       createImageThumbnails: false,
       disablePreviews: true
