@@ -59,10 +59,17 @@ class Class {
         })
     }
 
-    sendToEveryone(msg, id) {
+    sendToEveryone(msg, id, userMessage) {
         this.server.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN && client.id !== id) {
-                client.send(msg);
+                if (userMessage) {
+                    client.send(JSON.stringify({
+                        from: "global",
+                        msg
+                    }));
+                } else {
+                    client.send(msg);
+                }
             }
         });
     }

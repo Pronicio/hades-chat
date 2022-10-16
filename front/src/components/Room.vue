@@ -51,8 +51,18 @@ export default {
     this.ws.addEventListener('message', (event) => {
       //TODO: Clean this thing :
       if (event.data.includes("newUser") || event.data.includes("leaveUser")) {
-        const data = JSON.parse(event.data);
-        this.messages.push(data);
+        if (this.who !== "global") {
+          const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
+          const globalMessages = JSON.parse(storage.getItem("global"))
+
+          const data = JSON.parse(event.data);
+          globalMessages.push(data);
+          storage.setItem("global", JSON.stringify(globalMessages))
+          //TODO: Notification + update last.msg / last.time
+        } else {
+          const data = JSON.parse(event.data);
+          this.messages.push(data);
+        }
       } else if (event.data.includes("newId")) {
         const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
         const data = JSON.parse(event.data);
@@ -67,8 +77,6 @@ export default {
         storage.setItem('name', data.name);
       } else if (event.data.includes("from")) {
         const data = JSON.parse(event.data);
-        console.log(data);
-        console.log(this.who)
 
         if (this.who === data.from) {
           this.messages.push(data.msg);

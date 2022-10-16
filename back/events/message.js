@@ -68,7 +68,7 @@ async function messageEvent(message, socket) {
         }))
 
     } else if (data.action === "msg") {
-        if (data.to === 'global') return sendToEveryone(`${data.username}: ${data.msg}`, socket.id);
+        if (data.to === 'global') return sendToEveryone(`${data.username}: ${data.msg}`, socket.id, true);
         if (data.to === 'chatbot') socket.send(await chatbot(data.msg, socket.id))
         await sendToSomeone(data.msg, data.to, socket.id)
     }
