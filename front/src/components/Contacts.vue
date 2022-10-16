@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { useToast } from "vue-toastification";
 import stringSimilarity from "string-similarity";
 import AddUser from "./AddUser.vue";
 
@@ -96,9 +97,28 @@ export default {
         contacts.push(userInfos)
 
         storage.setItem("contacts", JSON.stringify(contacts))
+      } else {
+        this.toast.error("The user is untraceable..", {
+          position: "top-right",
+          timeout: 5000,
+          closeOnClick: true,
+          pauseOnFocusLoss: true,
+          pauseOnHover: true,
+          draggable: true,
+          draggablePercent: 0.6,
+          showCloseButtonOnHover: false,
+          hideProgressBar: false,
+          closeButton: "button",
+          icon: true,
+          rtl: false
+        });
       }
     }
-  }
+  },
+  setup() {
+    const toast = useToast();
+    return { toast }
+  },
 }
 </script>
 

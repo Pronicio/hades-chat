@@ -22,6 +22,9 @@ export default {
       }
     }
   },
+  mounted() {
+    Notification.requestPermission()
+  },
   methods: {
     changePersons(id, details) {
       this.who = id;
