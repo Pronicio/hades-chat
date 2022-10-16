@@ -11,11 +11,12 @@
       </div>
     </div>
     <div class="contacts">
-      <div :class="`user ${user.id === 'global' ? 'selected': ''}`" v-for="user in contacts" :key="user.id" :id="user.id" @click="changePersons(user.id)">
+      <div :class="`user ${user.id === 'global' ? 'selected': ''}`" v-for="user in contacts" :key="user.id"
+           :id="user.id" @click="changePersons(user.id)">
         <img :src="user.picture" :alt="`${user.username} Picture`" width="48"/>
         <div class="infos">
           <h3>{{ user.username }}</h3>
-          <p>{{ user.last.msg }}</p>
+          <p>{{ user.last?.msg }}</p>
         </div>
       </div>
       <div class="user" @click="addUserActiveModal">
@@ -37,48 +38,7 @@ export default {
     return {
       searchInput: null,
       current: 'global',
-      contacts: [
-        {
-          username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png", last: {
-            msg: "Hello Everyone !", time: "Just now"
-          }
-        },
-        {
-          username: "Hadès Bot", id: "chatbot", picture: "https://i.imgur.com/nPCPfmM.png", last: {
-            msg: "...", time: "Just now"
-          }
-        },
-        {
-          username: "Jessica Drew", id: "123", picture: "https://i.imgur.com/kPrwrVR.jpg", last: {
-            msg: "Ok, see you later", time: "Just now"
-          }
-        },
-        {
-          username: "David Moore", id: "456", picture: "https://i.imgur.com/SrNqmCr.jpg", last: {
-            msg: "You: i don't remember anything 😄", time: "18:30"
-          }
-        },
-        {
-          username: "Greg James", id: "879", picture: "https://i.imgur.com/CMow1x0.jpg", last: {
-            msg: "I got a job at SpaceX 🎉 🚀 ", time: "18:16"
-          }
-        },
-        {
-          username: "Emily Dorson", id: "321", picture: "https://i.imgur.com/LuurvEM.jpg", last: {
-            msg: "Table for four, 5PM. Be there.", time: "18:02"
-          }
-        },
-        {
-          username: "Little Sister", id: "654", picture: "https://i.imgur.com/Q7Rxmwy.jpg", last: {
-            msg: "Tell mom i will be home for tea 💜 ", time: "16:42"
-          }
-        },
-        {
-          username: "Art Class", id: "987", picture: "https://i.imgur.com/q1ssPTY.png", last: {
-            msg: "Your projects are due at 8pm sharp! Otherwise you'll have to deal with me!", time: "Yesterday"
-          }
-        }
-      ],
+      contacts: JSON.parse(localStorage.getItem('contacts') || sessionStorage.getItem('contacts')),
       addUserModal: null
     }
   },
@@ -87,7 +47,7 @@ export default {
       this.contacts.sort((a, b) => {
         let compareA = stringSimilarity.compareTwoStrings(a.username.toLowerCase(), this.searchInput.toLowerCase())
         let compareB = stringSimilarity.compareTwoStrings(b.username.toLowerCase(), this.searchInput.toLowerCase())
-        return (Math.abs(1-compareA) - Math.abs(1-compareB));
+        return (Math.abs(1 - compareA) - Math.abs(1 - compareB));
       });
     },
     changePersons: function (id) {
@@ -105,9 +65,38 @@ export default {
     addUserActiveModal: function () {
       this.addUserModal = "AddUser"
     },
-    addUser: function (id) {
+    addUser: async function (name) {
       this.addUserModal = null
-      console.log(id)
+
+      const response = await fetch(`${import.meta.env.VITE_API_URI}/get_user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        redirect: 'follow',
+        referrerPolicy: 'no-referrer',
+        body: JSON.stringify({
+          username: name
+        })
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        const userInfos = {
+          username: name,
+          id: data.id,
+          picture: data.picture,
+          publicKey: data.publicKey
+        }
+
+        this.contacts.push(userInfos)
+
+        const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage;
+        const contacts = JSON.parse(storage.getItem("contacts"))
+        contacts.push(userInfos)
+
+        storage.setItem("contacts", JSON.stringify(contacts))
+      }
     }
   }
 }

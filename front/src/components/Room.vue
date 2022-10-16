@@ -10,7 +10,8 @@
       </div>
 
       <form v-on:submit.prevent="sendMessage">
-        <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" minlength="1" maxlength="110">
+        <input v-model="msg" type="text" id="message" required size="10" placeholder="Message" minlength="1"
+               maxlength="110">
         <div class="send" @click="sendMessage"></div>
       </form>
     </div>
@@ -48,19 +49,41 @@ export default {
     });
 
     this.ws.addEventListener('message', (event) => {
+      //TODO: Clean this thing :
       if (event.data.includes("newUser") || event.data.includes("leaveUser")) {
         const data = JSON.parse(event.data);
         this.messages.push(data);
       } else if (event.data.includes("newId")) {
         const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
         const data = JSON.parse(event.data);
-        this.id = data.id; this.token = data.token;
-        storage.setItem('id', data.id); storage.setItem('token', data.token);
+        this.id = data.id;
+        this.token = data.token;
+        storage.setItem('id', data.id);
+        storage.setItem('token', data.token);
       } else if (event.data.includes("newName")) {
         const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
         const data = JSON.parse(event.data);
         this.username = data.name;
         storage.setItem('name', data.name);
+      } else if (event.data.includes("from")) {
+        const data = JSON.parse(event.data);
+        console.log(data);
+        console.log(this.who)
+
+        if (this.who === data.from) {
+          this.messages.push(data.msg);
+        } else {
+          const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
+          const userMessages = JSON.parse(storage.getItem(data.from))
+
+          if (userMessages) {
+            userMessages.push(data.msg);
+            storage.setItem(data.from, JSON.stringify(userMessages))
+            //TODO: Notification + update last.msg / last.time
+          } else {
+            storage.setItem(data.from, [ { ...data.msg } ])
+          }
+        }
       } else {
         this.messages.push(event.data);
       }

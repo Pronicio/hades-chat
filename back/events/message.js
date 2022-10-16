@@ -17,7 +17,7 @@ async function messageEvent(message, socket) {
         socket.id = randomUUID();
 
         const token = jwt.sign({ id: socket.id }, process.env.TOKEN, {
-            expiresIn: "7d"
+            expiresIn: process.env.EXP_TIME
         })
 
         socket.send(JSON.stringify({
@@ -70,7 +70,7 @@ async function messageEvent(message, socket) {
     } else if (data.action === "msg") {
         if (data.to === 'global') return sendToEveryone(`${data.username}: ${data.msg}`, socket.id);
         if (data.to === 'chatbot') socket.send(await chatbot(data.msg, socket.id))
-        await sendToSomeone(data.msg, data.to)
+        await sendToSomeone(data.msg, data.to, socket.id)
     }
 }
 

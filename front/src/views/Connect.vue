@@ -61,6 +61,10 @@ export default {
         storage.setItem('picture', this.picture)
       }
 
+      storage.setItem("contacts", JSON.stringify([
+        { username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png" }
+      ]))
+
       if (this.save_session) storage.setItem('save_session', this.save_session)
       this.$router.push('/')
     }

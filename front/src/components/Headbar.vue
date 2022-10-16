@@ -4,7 +4,7 @@
       <img :src="details.picture" alt="Picture" width="50" height="50" />
       <div class="infos">
         <h4>{{ details.username }}</h4>
-        <p>{{ details.last.time }}</p>
+        <p>{{ details.last?.time }}</p>
       </div>
     </div>
     <div class="right">
