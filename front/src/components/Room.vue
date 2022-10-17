@@ -30,6 +30,7 @@ export default {
       username: localStorage.getItem('name') || sessionStorage.getItem('name'),
       id: localStorage.getItem('id') || sessionStorage.getItem('id'),
       token: localStorage.getItem('token') || sessionStorage.getItem('token'),
+      picture: localStorage.getItem('picture') || sessionStorage.getItem('picture'),
       msg: null,
       messages: [],
       users: []
@@ -44,7 +45,8 @@ export default {
         action: "new",
         username: this.username,
         id: this.id,
-        token: this.token
+        token: this.token,
+        picture: this.picture
       }));
     });
 

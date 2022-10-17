@@ -62,7 +62,8 @@ export default {
       }
 
       storage.setItem("contacts", JSON.stringify([
-        { username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png" }
+        { username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png" },
+        { username: "Hadès Bot", id: "chatbot", picture: "https://i.imgur.com/nPCPfmM.png" }
       ]))
 
       if (this.save_session) storage.setItem('save_session', this.save_session)

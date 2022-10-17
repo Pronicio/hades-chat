@@ -32,7 +32,7 @@ export default async function routes(fastify, options) {
                 return rep.send({
                     success: true,
                     id: userData.id,
-                    picture: "https://i.imgur.com/q1ssPTY.png",
+                    picture: userData.picture,
                     publicKey: null,
                     // TODO: Picture id + Public Key
                 })

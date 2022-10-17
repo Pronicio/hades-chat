@@ -56,15 +56,26 @@ async function messageEvent(message, socket) {
             }))
         }
 
+        const imgurRegex = '(?:https?:\/\/)?(?:i\.)?imgur\.com\/(?:gallery\/)?(.+(?=[sbtmlh]\..{3,4})|.+(?=\..{3,4})|.+?(?=\s))';
+        const imgurRegexExtractId = /\w+(?=[^/]*$)/
+
+        if (data.picture?.match(imgurRegex)) {
+            data.picture = `https://i.imgur.com/${data.picture.match(imgurRegexExtractId)[0]}b.png`
+        } else {
+            data.picture = "https://i.imgur.com/1qOrGmw.png"
+        }
+
         await db.newUser({
             username: data.username,
-            id: socket.id
+            id: socket.id,
+            picture: data.picture
         })
 
         sendToEveryone(JSON.stringify({
             action: "newUser",
             username: data.username,
-            msg: `--> ${data.username} join the chat !`
+            msg: `--> ${data.username} join the chat !`,
+            picture: data.picture
         }))
 
     } else if (data.action === "msg") {

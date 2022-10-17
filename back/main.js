@@ -40,8 +40,6 @@ class Class {
         this.sendToEveryone = this.sendToEveryone.bind(this)
         this.sendToSomeone = this.sendToSomeone.bind(this)
 
-        this.handleRoutes()
-
         this.fastify.register(CORS, {
             origin: "*",
             methods: [ 'GET', 'POST' ],
@@ -49,6 +47,8 @@ class Class {
         });
 
         this.fastify.register(multipart)
+
+        this.fastify.register(api)
 
         this.fastify.listen({ port: process.env.API_PORT, host: "0.0.0.0" }, (err, address) => {
             if (err) {
@@ -107,10 +107,6 @@ class Class {
             username: user.username,
             msg: `<-- ${user.username} leave the chat !`
         }))
-    }
-
-    handleRoutes() {
-        this.fastify.register(api)
     }
 }
 
