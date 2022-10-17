@@ -19,6 +19,18 @@ export default {
       id: null
     }
   },
+  mounted() {
+    const specifiedElement = document.querySelector(".content")
+
+    document.addEventListener("click", (event) => {
+      const isClickInside = specifiedElement.contains(event.target);
+      if (event.target.className !== "modal") return
+
+      if (!isClickInside) {
+        this.$emit('close')
+      }
+    });
+  },
   methods: {
     addUser: function () {
       this.$emit('addUser', this.id)

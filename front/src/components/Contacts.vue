@@ -1,5 +1,5 @@
 <template>
-  <component :is="addUserModal" @addUser="addUser"></component>
+  <component :is="addUserModal" @addUser="addUser" @close="addUserModal = null"></component>
   <section>
     <div class="search_bar">
       <div id="burger"></div>
@@ -35,6 +35,7 @@ import AddUser from "./AddUser.vue";
 export default {
   name: "Contacts",
   components: { AddUser },
+  emits: ["changePersons"],
   data: function () {
     return {
       searchInput: null,
