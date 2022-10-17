@@ -122,7 +122,7 @@ export default {
       const out = document.getElementsByClassName('messages')[0]
       const isScrolledToBottom = out.scrollHeight - out.clientHeight <= (out.scrollTop + 200) + 1
 
-      if (pass || isScrolledToBottom) {
+      if (pass || !isScrolledToBottom) {
         out.scrollTop = out.scrollHeight - out.clientHeight;
       }
     },
@@ -140,6 +140,7 @@ export default {
       if (!data) return this.messages = [];
 
       this.messages = JSON.parse(data)
+      this.scrollToBottom(true)
     },
     messages: {
       async handler() {
