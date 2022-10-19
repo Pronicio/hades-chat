@@ -129,9 +129,9 @@ export default {
     },
     scrollToBottom: function (force = false) {
       const out = document.getElementsByClassName('messages')[0]
-      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= (out.scrollTop + 200) + 1
+      const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 200
 
-      if (force || !isScrolledToBottom) {
+      if (force || isScrolledToBottom) {
         out.scrollTop = out.scrollHeight - out.clientHeight;
       }
     },
