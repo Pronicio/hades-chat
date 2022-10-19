@@ -65,10 +65,14 @@ async function messageEvent(message, socket) {
             data.picture = "https://i.imgur.com/1qOrGmw.png"
         }
 
+        console.log(data.publicKey)
+        if (!data.publicKey) return
+
         await db.newUser({
             username: data.username,
             id: socket.id,
-            picture: data.picture
+            picture: data.picture,
+            publicKey: data.publicKey
         })
 
         sendToEveryone(JSON.stringify({

@@ -33,8 +33,7 @@ export default async function routes(fastify, options) {
                     success: true,
                     id: userData.id,
                     picture: userData.picture,
-                    publicKey: null,
-                    // TODO: Picture id + Public Key
+                    publicKey: userData.publicKey
                 })
             }
 

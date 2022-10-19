@@ -20,6 +20,7 @@
 
 <script>
 import Headbar from "./Headbar.vue";
+import { api } from "../api.js"
 
 export default {
   name: "Room",
@@ -31,6 +32,9 @@ export default {
       id: localStorage.getItem('id') || sessionStorage.getItem('id'),
       token: localStorage.getItem('token') || sessionStorage.getItem('token'),
       picture: localStorage.getItem('picture') || sessionStorage.getItem('picture'),
+      publicKey: localStorage.getItem('publicKey') || sessionStorage.getItem('publicKey'),
+      privateKey: localStorage.getItem('privateKey') || sessionStorage.getItem('privateKey'),
+      userPublicKey: null,
       msg: null,
       messages: [],
       users: []
@@ -46,11 +50,12 @@ export default {
         username: this.username,
         id: this.id,
         token: this.token,
-        picture: this.picture
+        picture: this.picture,
+        publicKey: window.btoa(encodeURIComponent(this.publicKey))
       }));
     });
 
-    this.ws.addEventListener('message', (event) => {
+    this.ws.addEventListener('message', async (event) => {
       //TODO: Clean this thing :
       if (event.data.includes("newUser") || event.data.includes("leaveUser")) {
         if (this.who !== "global") {
@@ -79,19 +84,21 @@ export default {
         storage.setItem('name', data.name);
       } else if (event.data.includes("from")) {
         const data = JSON.parse(event.data);
+        const privateKey = await api.importKey(this.privateKey, "private")
+        const message = await api.decrypt(data.msg, privateKey)
 
         if (this.who === data.from) {
-          this.messages.push(data.msg);
+          this.messages.push(message);
         } else {
           const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
           const userMessages = JSON.parse(storage.getItem(data.from))
 
           if (userMessages) {
-            userMessages.push(data.msg);
+            userMessages.push(message);
             storage.setItem(data.from, JSON.stringify(userMessages))
             //TODO: Notification + update last.msg / last.time
           } else {
-            storage.setItem(data.from, [ { ...data.msg } ])
+            storage.setItem(data.from, [ { ...message } ])
           }
         }
       } else {
@@ -113,18 +120,18 @@ export default {
         username: this.username,
         id: this.id,
         token: this.token,
-        msg: this.msg
+        msg: await api.encrypt(this.msg, this.userPublicKey)
       }));
 
       this.scrollToBottom(true)
       this.msg = null;
       this.saveMessages(this.who)
     },
-    scrollToBottom: function (pass = false) {
+    scrollToBottom: function (force = false) {
       const out = document.getElementsByClassName('messages')[0]
       const isScrolledToBottom = out.scrollHeight - out.clientHeight <= (out.scrollTop + 200) + 1
 
-      if (pass || !isScrolledToBottom) {
+      if (force || !isScrolledToBottom) {
         out.scrollTop = out.scrollHeight - out.clientHeight;
       }
     },
@@ -143,6 +150,15 @@ export default {
 
       this.messages = JSON.parse(data)
       this.scrollToBottom(true)
+
+      // TODO: Copy :
+      const contacts = JSON.parse(storage.getItem("contacts"))
+      const user = contacts.find(el => el.id === id)
+
+      if (!user.publicKey) return
+      api.importKey(decodeURIComponent(window.atob(user.publicKey)), "public").then(publicKey => {
+        this.userPublicKey = publicKey
+      })
     },
     messages: {
       async handler() {

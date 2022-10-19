@@ -18,6 +18,7 @@
 
 <script>
 import { Dropzone } from "dropzone";
+import { api } from "../api.js"
 
 export default {
   name: "Connect",
@@ -25,10 +26,13 @@ export default {
     return {
       name: null,
       save_session: false,
-      picture: "src/assets/images/icons/user-plus.svg"
+      picture: "src/assets/images/icons/user-plus.svg",
+      keys: {}
     }
   },
   mounted() {
+    this.setup()
+
     const dropzone = new Dropzone(".picture", {
       url: `${import.meta.env.VITE_API_URI}/upload_image`,
       uploadMultiple: false,
@@ -48,6 +52,9 @@ export default {
     });
   },
   methods: {
+    async setup() {
+      this.keys = await api.createKeys()
+    },
     setName() {
       if (!this.name) return false
       if (this.name.length < 4 || this.name.length > 18) {
@@ -55,6 +62,9 @@ export default {
       }
 
       const storage = this.save_session ? localStorage : sessionStorage
+
+      storage.setItem('publicKey', this.keys.publicKey)
+      storage.setItem('privateKey', this.keys.privateKey)
 
       storage.setItem('name', this.name)
       if (this.picture.includes("imgur")) {
@@ -69,7 +79,7 @@ export default {
       if (this.save_session) storage.setItem('save_session', this.save_session)
       this.$router.push('/')
     }
-  }
+  },
 }
 </script>
 
