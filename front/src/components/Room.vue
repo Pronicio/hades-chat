@@ -84,8 +84,12 @@ export default {
         storage.setItem('name', data.name);
       } else if (event.data.includes("from")) {
         const data = JSON.parse(event.data);
-        const privateKey = await api.importKey(this.privateKey, "private")
-        const message = await api.decrypt(data.msg, privateKey)
+
+        let message = data.msg
+        if (this.who !== "global" && this.who !== "chatbot") {
+          const privateKey = await api.importKey(this.privateKey, "private")
+          message = await api.decrypt(data.msg, privateKey)
+        }
 
         if (this.who === data.from) {
           this.messages.push(message);
@@ -114,13 +118,21 @@ export default {
   methods: {
     sendMessage: async function () {
       this.messages.push({ action: 'me', msg: this.msg });
+
+      let message;
+      if (this.userPublicKey) {
+        message = await api.encrypt(this.msg, this.userPublicKey)
+      } else {
+        message = this.msg
+      }
+
       await this.ws.send(JSON.stringify({
         action: "msg",
         to: this.who,
         username: this.username,
         id: this.id,
         token: this.token,
-        msg: await api.encrypt(this.msg, this.userPublicKey)
+        msg: message
       }));
 
       this.scrollToBottom(true)
