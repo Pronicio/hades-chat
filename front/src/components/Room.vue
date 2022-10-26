@@ -56,59 +56,58 @@ export default {
     });
 
     this.ws.addEventListener('message', async (event) => {
-      //TODO: Clean this thing :
-      if (event.data.includes("newUser") || event.data.includes("leaveUser")) {
-        if (this.who !== "global") {
-          const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
-          const globalMessages = JSON.parse(storage.getItem("global"))
+      const data = JSON.parse(event.data);
+      const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage;
 
-          const data = JSON.parse(event.data);
-          globalMessages.push(data);
-          storage.setItem("global", JSON.stringify(globalMessages))
-          //TODO: Notification + update last.msg / last.time
-        } else {
-          const data = JSON.parse(event.data);
-          this.messages.push(data);
-        }
-      } else if (event.data.includes("newId")) {
-        const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
-        const data = JSON.parse(event.data);
-        this.id = data.id;
-        this.token = data.token;
-        storage.setItem('id', data.id);
-        storage.setItem('token', data.token);
-      } else if (event.data.includes("newName")) {
-        const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
-        const data = JSON.parse(event.data);
-        this.username = data.name;
-        storage.setItem('name', data.name);
-      } else if (event.data.includes("from")) {
-        const data = JSON.parse(event.data);
+      switch (data.action) {
+        case "newUser" || "leaveUser":
+          if (this.who !== "global") {
+            const globalMessages = JSON.parse(storage.getItem("global"))
 
-        let message = data.msg
-        if (data.who !== "global" && data.who !== "chatbot") {
-          const privateKey = await api.importKey(this.privateKey, "private")
-          message = await api.decrypt(data.msg, privateKey)
-        }
-
-        if (this.who === data.from) {
-          this.messages.push(message);
-        } else {
-          const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage;
-          const stocked = storage.getItem(data.from)
-
-          if (!stocked) {
-            storage.setItem(data.from, [ { ...message } ])
-          } else {
-            const userMessages = JSON.parse(stocked)
-            userMessages.push(message);
-            storage.setItem(data.from, JSON.stringify(userMessages))
+            globalMessages.push(data);
+            storage.setItem("global", JSON.stringify(globalMessages))
             //TODO: Notification + update last.msg / last.time
+          } else {
+            this.messages.push(data);
           }
-        }
-      } else {
-        this.messages.push(event.data);
+          break;
+        case "newId":
+          this.id = data.id;
+          this.token = data.token;
+          storage.setItem('id', data.id);
+          storage.setItem('token', data.token);
+          break;
+        case "newName":
+          this.username = data.name;
+          storage.setItem('name', data.name);
+          break;
+        case "from":
+          let message = data.msg
+          if (data.from !== "global" && data.from !== "chatbot") {
+            const privateKey = await api.importKey(this.privateKey, "private")
+            message = await api.decrypt(data.msg, privateKey)
+          }
+
+          if (this.who === data.from) {
+            this.messages.push(message);
+          } else {
+            const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage;
+            const stocked = storage.getItem(data.from)
+
+            if (!stocked) {
+              storage.setItem(data.from, [ { ...message } ])
+            } else {
+              const userMessages = JSON.parse(stocked)
+              userMessages.push(message);
+              storage.setItem(data.from, JSON.stringify(userMessages))
+              //TODO: Notification + update last.msg / last.time
+            }
+          }
+          break;
+        default:
+          this.messages.push(event.data);
       }
+
       this.saveMessages(this.who)
     });
 
