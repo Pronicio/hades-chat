@@ -1,7 +1,8 @@
 <template>
   <div class="headbar">
     <div class="left">
-      <img :src="details.picture" alt="Picture" width="50" height="50" />
+      <div class="back" @click="backToContacts"></div>
+      <img class="picture" :src="details.picture" alt="Picture" width="50" height="50" />
       <div class="infos">
         <h4>{{ details.username }}</h4>
         <p>{{ details.last?.time }}</p>
@@ -19,6 +20,14 @@
 export default {
   name: "Headbar",
   props: [ 'details' ],
+  methods: {
+    backToContacts() {
+      if (window.innerWidth <= 1130) {
+        document.getElementById("contacts").style.width = '100vw';
+        document.getElementById("room").style.display = 'none';
+      }
+    }
+  }
 }
 </script>
 

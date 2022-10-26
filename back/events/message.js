@@ -65,7 +65,6 @@ async function messageEvent(message, socket) {
             data.picture = "https://i.imgur.com/1qOrGmw.png"
         }
 
-        console.log(data.publicKey)
         if (!data.publicKey) return
 
         await db.newUser({

@@ -1,6 +1,6 @@
 <template>
   <component :is="addUserModal" @addUser="addUser" @close="addUserModal = null"></component>
-  <section>
+  <section id="contacts">
     <div class="search_bar">
       <div id="burger"></div>
       <form v-on:submit.prevent="search" id="search">
@@ -35,7 +35,7 @@ import AddUser from "./AddUser.vue";
 export default {
   name: "Contacts",
   components: { AddUser },
-  emits: ["changePersons"],
+  emits: [ "changePersons" ],
   data: function () {
     return {
       searchInput: null,
@@ -63,6 +63,11 @@ export default {
 
       this.$emit('changePersons', id, details)
       this.current = id
+
+      if (window.innerWidth <= 1130) {
+        document.getElementById("contacts").style.width = '0';
+        document.getElementById("room").style.display = 'flex';
+      }
     },
     addUserActiveModal: function () {
       this.addUserModal = "AddUser"

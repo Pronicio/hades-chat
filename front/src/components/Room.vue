@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section id="room">
     <Headbar :details="details"/>
     <div class="page">
       <div class="messages">
@@ -139,11 +139,11 @@ export default {
       this.msg = null;
       this.saveMessages(this.who)
     },
-    scrollToBottom: function (force = false) {
+    scrollToBottom: function (force = false, newMsg = false) {
       const out = document.getElementsByClassName('messages')[0]
       const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 200
 
-      if (force || isScrolledToBottom) {
+      if (force || !isScrolledToBottom || (newMsg && isScrolledToBottom)) {
         out.scrollTop = out.scrollHeight - out.clientHeight;
       }
     },
@@ -175,7 +175,7 @@ export default {
     messages: {
       async handler() {
         await this.$nextTick()
-        this.scrollToBottom()
+        this.scrollToBottom(false, true)
       },
       deep: true
     }

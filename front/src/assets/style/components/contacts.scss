@@ -113,7 +113,18 @@ section {
   }
 
   @media (max-width: $mobile) {
-    display: none;
-  }
+    width: 100vw;
 
+    .search_bar #search input {
+      width: auto;
+    }
+
+    .contacts .user {
+      width: 100vw;
+    }
+
+    .contacts .user .infos {
+      width: auto;
+    }
+  }
 }
