@@ -60,17 +60,10 @@ export default {
       const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage;
 
       switch (data.action) {
-        case "newUser" || "leaveUser":
-          if (this.who !== "global") {
-            const globalMessages = JSON.parse(storage.getItem("global"))
-
-            globalMessages.push(data);
-            storage.setItem("global", JSON.stringify(globalMessages))
-            //TODO: Notification + update last.msg / last.time
-          } else {
-            this.messages.push(data);
-          }
-          break;
+        case "newUser":
+          break; //TODO: Users status.
+        case "leaveUser":
+          break; //TODO: Users status.
         case "newId":
           this.id = data.id;
           this.token = data.token;
@@ -82,8 +75,14 @@ export default {
           storage.setItem('name', data.name);
           break;
         case "from":
-          let message = data.msg
-          if (data.from !== "global" && data.from !== "chatbot") {
+          let message = data.msg;
+
+          if (data.from === "chatbot") {
+            this.messages.push(message);
+            break;
+          }
+
+          if (data.from !== "global") {
             const privateKey = await api.importKey(this.privateKey, "private")
             message = await api.decrypt(data.msg, privateKey)
           }

@@ -64,6 +64,7 @@ class Class {
             if (client.readyState === WebSocket.OPEN && client.id !== id) {
                 if (userMessage) {
                     client.send(JSON.stringify({
+                        action: "from",
                         from: "global",
                         msg
                     }));
@@ -78,6 +79,7 @@ class Class {
         this.server.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN && client.id === id) {
                 client.send(JSON.stringify({
+                    action: "from",
                     from: socketId,
                     msg
                 }));
