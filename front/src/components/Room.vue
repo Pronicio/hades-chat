@@ -86,7 +86,7 @@ export default {
         const data = JSON.parse(event.data);
 
         let message = data.msg
-        if (this.who !== "global" && this.who !== "chatbot") {
+        if (data.who !== "global" && data.who !== "chatbot") {
           const privateKey = await api.importKey(this.privateKey, "private")
           message = await api.decrypt(data.msg, privateKey)
         }
@@ -94,15 +94,16 @@ export default {
         if (this.who === data.from) {
           this.messages.push(message);
         } else {
-          const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
-          const userMessages = JSON.parse(storage.getItem(data.from))
+          const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage;
+          const stocked = storage.getItem(data.from)
 
-          if (userMessages) {
+          if (!stocked) {
+            storage.setItem(data.from, [ { ...message } ])
+          } else {
+            const userMessages = JSON.parse(stocked)
             userMessages.push(message);
             storage.setItem(data.from, JSON.stringify(userMessages))
             //TODO: Notification + update last.msg / last.time
-          } else {
-            storage.setItem(data.from, [ { ...message } ])
           }
         }
       } else {
@@ -167,7 +168,7 @@ export default {
       const contacts = JSON.parse(storage.getItem("contacts"))
       const user = contacts.find(el => el.id === id)
 
-      if (!user.publicKey) return
+      if (!user.publicKey) return this.userPublicKey = null;
       api.importKey(decodeURIComponent(window.atob(user.publicKey)), "public").then(publicKey => {
         this.userPublicKey = publicKey
       })
