@@ -74,13 +74,6 @@ async function messageEvent(message, socket) {
             publicKey: data.publicKey
         })
 
-        sendToEveryone(JSON.stringify({
-            action: "newUser",
-            username: data.username,
-            msg: `--> ${data.username} join the chat !`,
-            picture: data.picture
-        }))
-
     } else if (data.action === "msg") {
         if (data.to === 'global') return sendToEveryone(`${data.username}: ${data.msg}`, socket.id, true);
         if (data.to === 'chatbot') socket.send(await chatbot(data.msg, socket.id))

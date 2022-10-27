@@ -3,6 +3,7 @@
     <Headbar :details="details"/>
     <div class="page">
       <div class="messages">
+        <div v-if="who === 'global'" class="msg info"><p>Say hi to the world !</p></div>
         <div :class="`msg ${typeof msg === 'object' ? msg.action : ''}`" v-for="msg in messages" :key="msg">
           <p v-if="typeof msg === 'object'">{{ msg.msg }}</p>
           <p v-else>{{ msg }}</p>
@@ -60,10 +61,6 @@ export default {
       const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage;
 
       switch (data.action) {
-        case "newUser":
-          break; //TODO: Users status.
-        case "leaveUser":
-          break; //TODO: Users status.
         case "newId":
           this.id = data.id;
           this.token = data.token;

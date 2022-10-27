@@ -103,12 +103,6 @@ class Class {
         }
 
         if (!user) return false
-
-        this.sendToEveryone(JSON.stringify({
-            action: "leaveUser",
-            username: user.username,
-            msg: `<-- ${user.username} leave the chat !`
-        }))
     }
 }
 
