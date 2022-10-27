@@ -52,7 +52,8 @@ export default {
         id: this.id,
         token: this.token,
         picture: this.picture,
-        publicKey: window.btoa(encodeURIComponent(this.publicKey))
+        publicKey: window.btoa(encodeURIComponent(this.publicKey)),
+        notification: null
       }));
     });
 
@@ -97,6 +98,15 @@ export default {
               userMessages.push(message);
               storage.setItem(data.from, JSON.stringify(userMessages))
               //TODO: Notification + update last.msg / last.time
+
+              if (this.checkNotificationPromise()) {
+                if (this.notification) this.notification.close()
+
+                const contacts = JSON.parse(storage.getItem("contacts"))
+                const user = contacts.find(el => el.id === data.from)
+
+                this.notification = new Notification(user.username, { body: message, icon: user.picture });
+              }
             }
           }
           break;
@@ -146,6 +156,14 @@ export default {
     saveMessages: function (id) {
       const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
       storage.setItem(id, JSON.stringify(this.messages))
+    },
+    checkNotificationPromise: function () {
+      try {
+        Notification.requestPermission().then();
+      } catch (e) {
+        return false;
+      }
+      return true;
     }
   },
   watch: {
