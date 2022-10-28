@@ -78,7 +78,7 @@ export default {
 
           if (data.from === "chatbot") {
             this.messages.push(message);
-            this.changeDetails(message)
+            this.changeDetails(message, "chatbot")
             break;
           }
 
@@ -110,7 +110,7 @@ export default {
               }
             }
           }
-          this.changeDetails(message)
+          this.changeDetails(message, data.from)
           break;
         default:
           this.messages.push(event.data);
@@ -167,24 +167,21 @@ export default {
       }
       return true;
     },
-    changeDetails: function (message) {
+    changeDetails: function (message, contactId) {
       this.last = {
-        id: this.details.id,
+        id: contactId,
         time: Date.now(),
         msg: message
       }
 
-      console.log(this.last)
-      this.$emit('updateLast', this.last)
-
       const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
       const contacts = JSON.parse(storage.getItem("contacts"))
 
-      const index = contacts.findIndex(el => el.id === this.details.id);
+      const index = contacts.findIndex(el => el.id === contactId);
 
       if (index !== -1) {
         contacts[index] = {
-          ...this.details, last: {
+          ...contacts[index], last: {
             time: Date.now(),
             msg: message
           }
@@ -192,6 +189,7 @@ export default {
       }
 
       storage.setItem("contacts", JSON.stringify(contacts))
+      this.$emit('updateLast', this.last)
     }
   },
   watch: {

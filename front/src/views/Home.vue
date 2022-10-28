@@ -1,5 +1,5 @@
 <template>
-  <Contacts @changePersons="changePersons"/>
+  <Contacts @changePersons="changePersons" :last="last"/>
   <Room :who="who" :details="details" @updateLast="updateLast"/>
 </template>
 
@@ -19,7 +19,8 @@ export default {
         username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png", last: {
           msg: "Hello Everyone !", time: "Just now"
         }
-      }
+      },
+      last: null
     }
   },
   mounted() {
@@ -31,8 +32,7 @@ export default {
       this.details = details
     },
     updateLast(data) {
-      console.log(data);
-      this.details.last = data.last;
+      this.last = data;
     }
   }
 }

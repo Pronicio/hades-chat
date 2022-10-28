@@ -35,6 +35,7 @@ import AddUser from "./AddUser.vue";
 export default {
   name: "Contacts",
   components: { AddUser },
+  props: [ "last" ],
   emits: [ "changePersons" ],
   data: function () {
     return {
@@ -119,6 +120,11 @@ export default {
           rtl: false
         });
       }
+    }
+  },
+  watch: {
+    last() {
+      this.contacts = JSON.parse(localStorage.getItem('contacts') || sessionStorage.getItem('contacts'))
     }
   },
   setup() {
