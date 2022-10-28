@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "crypto-js": "^4.1.1",
+    "dayjs": "^1.11.6",
     "dropzone": "^6.0.0-beta.2",
     "string-similarity": "^4.0.4",
     "vue": "^3.2.25",

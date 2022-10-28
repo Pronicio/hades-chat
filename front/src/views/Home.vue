@@ -1,6 +1,6 @@
 <template>
-  <Contacts @changePersons="changePersons" />
-  <Room :who="who" :details="details"/>
+  <Contacts @changePersons="changePersons"/>
+  <Room :who="who" :details="details" @updateLast="updateLast"/>
 </template>
 
 <script>
@@ -29,6 +29,10 @@ export default {
     changePersons(id, details) {
       this.who = id;
       this.details = details
+    },
+    updateLast(data) {
+      console.log(data);
+      this.details.last = data.last;
     }
   }
 }

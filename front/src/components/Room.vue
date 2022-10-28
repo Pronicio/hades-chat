@@ -1,6 +1,6 @@
 <template>
   <section id="room">
-    <Headbar :details="details"/>
+    <Headbar :details="details" :last="last"/>
     <div class="page">
       <div class="messages">
         <div v-if="who === 'global'" class="msg info"><p>Say hi to the world !</p></div>
@@ -38,7 +38,8 @@ export default {
       userPublicKey: null,
       msg: null,
       messages: [],
-      users: []
+      users: [],
+      last: null
     }
   },
   mounted: function () {
@@ -77,6 +78,7 @@ export default {
 
           if (data.from === "chatbot") {
             this.messages.push(message);
+            this.changeDetails(message)
             break;
           }
 
@@ -97,7 +99,6 @@ export default {
               const userMessages = JSON.parse(stocked)
               userMessages.push(message);
               storage.setItem(data.from, JSON.stringify(userMessages))
-              //TODO: Notification + update last.msg / last.time
 
               if (this.checkNotificationPromise()) {
                 if (this.notification) this.notification.close()
@@ -109,6 +110,7 @@ export default {
               }
             }
           }
+          this.changeDetails(message)
           break;
         default:
           this.messages.push(event.data);
@@ -164,6 +166,32 @@ export default {
         return false;
       }
       return true;
+    },
+    changeDetails: function (message) {
+      this.last = {
+        id: this.details.id,
+        time: Date.now(),
+        msg: message
+      }
+
+      console.log(this.last)
+      this.$emit('updateLast', this.last)
+
+      const storage = localStorage.getItem('save_session') ? localStorage : sessionStorage
+      const contacts = JSON.parse(storage.getItem("contacts"))
+
+      const index = contacts.findIndex(el => el.id === this.details.id);
+
+      if (index !== -1) {
+        contacts[index] = {
+          ...this.details, last: {
+            time: Date.now(),
+            msg: message
+          }
+        };
+      }
+
+      storage.setItem("contacts", JSON.stringify(contacts))
     }
   },
   watch: {
