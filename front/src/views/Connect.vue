@@ -26,7 +26,7 @@ export default {
     return {
       name: null,
       save_session: false,
-      picture: "src/assets/images/icons/user-plus.svg",
+      picture: "https://chat.pronicio.dev/user-plus.svg",
       keys: {}
     }
   },
