@@ -17,7 +17,7 @@ async function messageEvent(message, socket) {
         socket.id = randomUUID();
 
         const token = jwt.sign({ id: socket.id }, process.env.TOKEN, {
-            expiresIn: "7d"
+            expiresIn: process.env.EXP_TIME
         })
 
         socket.send(JSON.stringify({
@@ -56,21 +56,28 @@ async function messageEvent(message, socket) {
             }))
         }
 
+        const imgurRegex = '(?:https?:\/\/)?(?:i\.)?imgur\.com\/(?:gallery\/)?(.+(?=[sbtmlh]\..{3,4})|.+(?=\..{3,4})|.+?(?=\s))';
+        const imgurRegexExtractId = /\w+(?=[^/]*$)/
+
+        if (data.picture?.match(imgurRegex)) {
+            data.picture = `https://i.imgur.com/${data.picture.match(imgurRegexExtractId)[0]}b.png`
+        } else {
+            data.picture = "https://i.imgur.com/1qOrGmw.png"
+        }
+
+        if (!data.publicKey) return
+
         await db.newUser({
             username: data.username,
-            id: socket.id
+            id: socket.id,
+            picture: data.picture,
+            publicKey: data.publicKey
         })
 
-        sendToEveryone(JSON.stringify({
-            action: "newUser",
-            username: data.username,
-            msg: `--> ${data.username} join the chat !`
-        }))
-
     } else if (data.action === "msg") {
-        if (data.to === 'global') return sendToEveryone(`${data.username}: ${data.msg}`, socket.id);
+        if (data.to === 'global') return sendToEveryone(`${data.username}: ${data.msg}`, socket.id, true);
         if (data.to === 'chatbot') socket.send(await chatbot(data.msg, socket.id))
-        await sendToSomeone(data.msg, data.to)
+        await sendToSomeone(data.msg, data.to, socket.id)
     }
 }
 

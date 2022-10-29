@@ -1,6 +1,6 @@
 <template>
-  <Contacts @changePersons="changePersons" />
-  <Room :who="who" :details="details"/>
+  <Contacts @changePersons="changePersons" :last="last"/>
+  <Room :who="who" :details="details" @updateLast="updateLast"/>
 </template>
 
 <script>
@@ -19,13 +19,20 @@ export default {
         username: "Global Chat", id: "global", picture: "https://i.imgur.com/BcKjFGH.png", last: {
           msg: "Hello Everyone !", time: "Just now"
         }
-      }
+      },
+      last: null
     }
+  },
+  mounted() {
+    Notification.requestPermission()
   },
   methods: {
     changePersons(id, details) {
       this.who = id;
       this.details = details
+    },
+    updateLast(data) {
+      this.last = data;
     }
   }
 }

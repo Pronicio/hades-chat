@@ -14,7 +14,19 @@
     align-items: center;
     margin-left: 5px;
 
-    img {
+    .back {
+      display: none;
+      background: url("@/assets/images/icons/backspace.svg");
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+
+      @media (max-width: $mobile) {
+        display: block;
+      }
+    }
+
+    .picture {
       border-radius: 50%;
     }
 

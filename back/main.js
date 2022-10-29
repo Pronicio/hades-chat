@@ -7,7 +7,7 @@ import { messageEvent } from './events/message.js'
 
 import Redis from "./redis/main.js";
 import dotenv from 'dotenv/config';
-import { uploadImage } from "./utils/methods.js";
+import api from "./routes/api.js";
 
 import { lookup } from 'dns'
 import { hostname } from 'os'
@@ -40,8 +40,6 @@ class Class {
         this.sendToEveryone = this.sendToEveryone.bind(this)
         this.sendToSomeone = this.sendToSomeone.bind(this)
 
-        this.handleRoutes()
-
         this.fastify.register(CORS, {
             origin: "*",
             methods: [ 'GET', 'POST' ],
@@ -49,6 +47,8 @@ class Class {
         });
 
         this.fastify.register(multipart)
+
+        this.fastify.register(api)
 
         this.fastify.listen({ port: process.env.API_PORT, host: "0.0.0.0" }, (err, address) => {
             if (err) {
@@ -59,18 +59,30 @@ class Class {
         })
     }
 
-    sendToEveryone(msg, id) {
+    sendToEveryone(msg, id, userMessage) {
         this.server.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN && client.id !== id) {
-                client.send(msg);
+                if (userMessage) {
+                    client.send(JSON.stringify({
+                        action: "from",
+                        from: "global",
+                        msg
+                    }));
+                } else {
+                    client.send(msg);
+                }
             }
         });
     }
 
-    async sendToSomeone(msg, id) {
+    async sendToSomeone(msg, id, socketId) {
         this.server.clients.forEach(function each(client) {
             if (client.readyState === WebSocket.OPEN && client.id === id) {
-                client.send(msg);
+                client.send(JSON.stringify({
+                    action: "from",
+                    from: socketId,
+                    msg
+                }));
             }
         });
     }
@@ -91,27 +103,6 @@ class Class {
         }
 
         if (!user) return false
-
-        this.sendToEveryone(JSON.stringify({
-            action: "leaveUser",
-            username: user.username,
-            msg: `<-- ${user.username} leave the chat !`
-        }))
-    }
-
-    handleRoutes() {
-        this.fastify.route({
-            method: 'POST',
-            url: '/upload_image',
-            handler: async (req, rep) => {
-                const data = await req.file()
-
-                const b64 = (await data.toBuffer()).toString('base64')
-                const link = await uploadImage(b64)
-
-                rep.send({ success: true, link })
-            }
-        })
     }
 }
 
