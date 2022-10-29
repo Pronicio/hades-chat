@@ -1,8 +1,8 @@
 import Fastify from 'fastify'
+import ws from '@fastify/websocket'
 import CORS from '@fastify/cors'
 import multipart from '@fastify/multipart'
 
-import { WebSocket, WebSocketServer } from 'ws';
 import { messageEvent } from './events/message.js'
 
 import Redis from "./redis/main.js";
@@ -16,26 +16,7 @@ class Class {
     constructor() {
         this.fastify = Fastify({ logger: false })
 
-        this.server = new WebSocketServer({
-            port: process.env.PORT
-        })
-
         this.db = new Redis();
-
-        this.server.on('listening', () => {
-            const serverPort = this.server.options.port
-
-            lookup(hostname(), function (err, add, fam) {
-                console.log(`Server listening to ws://${add}:${serverPort}`);
-            })
-        })
-
-        this.server.on('connection', (socket, req) => {
-            socket.on('message', (message) => messageEvent(message, socket));
-            socket.on('close', (client) => this.userDisconnected(client, socket))
-            socket.on('error', (client) => this.userDisconnected(client, socket))
-            socket.on('wsClientError', (error, client) => this.userDisconnected(client, socket))
-        })
 
         this.sendToEveryone = this.sendToEveryone.bind(this)
         this.sendToSomeone = this.sendToSomeone.bind(this)
@@ -47,21 +28,33 @@ class Class {
         });
 
         this.fastify.register(multipart)
-
         this.fastify.register(api)
 
-        this.fastify.listen({ port: process.env.API_PORT, host: "0.0.0.0" }, (err, address) => {
+        this.fastify.register(ws)
+        this.fastify.register(async (fastify) => {
+            fastify.get('/ws', { websocket: true }, (connection, req) => {
+                connection.socket.on('message', (message) => messageEvent(message, connection.socket));
+                connection.socket.on('close', (client) => this.userDisconnected(client, connection.socket))
+                connection.socket.on('error', (client) => this.userDisconnected(client, connection.socket))
+                connection.socket.on('wsClientError', (error, client) => this.userDisconnected(client, connection.socket))
+            })
+        })
+
+        this.fastify.listen({ port: process.env.PORT, host: "0.0.0.0" }, (err, address) => {
             if (err) {
                 console.error(err)
                 process.exit(1)
             }
-            console.log(`Fastify is on : ${address}`)
+
+            lookup(hostname(), function (err, add, fam) {
+                console.log(`Server listening to http://${add}:${process.env.PORT}`);
+            })
         })
     }
 
     sendToEveryone(msg, id, userMessage) {
-        this.server.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN && client.id !== id) {
+        this.fastify.websocketServer.clients.forEach(function each(client) {
+            if (client.readyState === 1 && client.id !== id) {
                 if (userMessage) {
                     client.send(JSON.stringify({
                         action: "from",
@@ -76,8 +69,8 @@ class Class {
     }
 
     async sendToSomeone(msg, id, socketId) {
-        this.server.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN && client.id === id) {
+        this.fastify.websocketServer.clients.forEach(function each(client) {
+            if (client.readyState === 1 && client.id === id) {
                 client.send(JSON.stringify({
                     action: "from",
                     from: socketId,

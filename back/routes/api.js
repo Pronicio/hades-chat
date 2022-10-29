@@ -3,6 +3,15 @@ import { db } from "../main.js";
 
 export default async function routes(fastify, options) {
     fastify.route({
+        method: 'GET',
+        url: '/',
+        handler: async (req, rep) => {
+            rep.send({ hello: "world" })
+        }
+    })
+
+
+    fastify.route({
         method: 'POST',
         url: '/upload_image',
         handler: async (req, rep) => {

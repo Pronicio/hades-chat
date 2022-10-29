@@ -43,11 +43,10 @@ export default {
     }
   },
   mounted: function () {
-    const ws = new WebSocket(import.meta.env.VITE_WS_URI);
-    this.ws = ws;
+    this.ws = new WebSocket(import.meta.env.VITE_WS_URI);
 
     this.ws.addEventListener('open', () => {
-      ws.send(JSON.stringify({
+      this.ws.send(JSON.stringify({
         action: "new",
         username: this.username,
         id: this.id,
