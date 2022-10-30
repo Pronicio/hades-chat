@@ -1,3 +1,13 @@
-# 🌌 Hadès-chat
+<h1 align="center">
+  <img src="https://i.imgur.com/wPk6N8R.png" width="60" />
+  <p>Hadès-chat</p>
+</h1>
 
-[![wakatime](https://wakatime.com/badge/user/fa794658-052c-46a2-941e-4dc515574900/project/0d421587-98ab-43e4-8c09-be358e5ad8ab.svg)](https://wakatime.com/badge/user/fa794658-052c-46a2-941e-4dc515574900/project/0d421587-98ab-43e4-8c09-be358e5ad8ab)
+A simple interface to communicate with websockets. End-to-end encrypted messaging. Communicate in 1/1 with a person.
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.  
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
