@@ -1,0 +1,60 @@
+#app {
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid rgba(228, 254, 114, 0.04);
+  border-radius: 24px;
+  padding: 2rem;
+
+  display: flex;
+  flex-direction: column;
+
+  .chat {
+
+    p {
+      padding: 8px 16px;
+      margin: 5px;
+      background: rgba(245, 173, 114, 0.04);
+      border-radius: 45px;
+    }
+
+    &.me {
+      align-self: flex-end;
+
+      p {
+        background: rgba(12, 179, 127, 0.1);
+      }
+    }
+  }
+
+  .input {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgba(245, 173, 114, 0.06);
+    border-radius: 50px;
+    margin-top: 2rem;
+
+    input {
+      width: 80%;
+      border: none;
+      outline: none;
+      background: none;
+      padding: 14px 16px;
+
+      font-family: "Fira Code", sans-serif;
+      color: var(--text);
+      text-indent: 12px;
+    }
+
+    .send-icon {
+      background: url("/assets/icons/send.svg") no-repeat;
+      width: 24px;
+      height: 24px;
+
+      filter: var(--filter);
+      margin-right: auto;
+      cursor: pointer;
+    }
+  }
+}

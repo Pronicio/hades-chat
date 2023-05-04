@@ -1,0 +1,17 @@
+@import url(https://fonts.bunny.net/css?family=fira-code:400,500);
+
+:root {
+  --color: #E4FE72;
+  --background: #171717;
+  --text: #FFFFFF;
+  --filter: invert(100%) sepia(75%) saturate(1394%) hue-rotate(26deg) brightness(125%) contrast(98%);
+}
+
+body {
+  background: var(--background);
+  font-family: "Fira Code", sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0;
+  padding: 1rem;
+}
