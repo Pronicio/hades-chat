@@ -23,8 +23,10 @@
 </template>
 
 <script setup lang="ts">
+import { ContactList } from "~/api/types";
+import { cryptoApi } from "~/api/utils";
 
-const contacts = [
+const contacts: ContactList = [
     {
         id: "345d6825-4514-46af-9ddd-8a3338f240ce",
         username: "Pablo",
@@ -50,6 +52,14 @@ const contacts = [
         badge: { who: "it", status: "miss-call" }
     }
 ]
+
+onMounted(async () => {
+    const keys = await cryptoApi.createKeys()
+    localStorage.setItem("private", keys.privateKey)
+
+    const pKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
+    console.log(pKey);
+})
 </script>
 
 <style lang="scss">
