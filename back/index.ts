@@ -1,14 +1,21 @@
 import { fastify, FastifyInstance, FastifyRequest } from 'fastify'
 import ws, { SocketStream } from '@fastify/websocket'
 
+import Redis from "ioredis";
 import { consola } from "consola";
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 import { messageEvent } from "./events/messageEvent";
+import { connected, error, ready } from "./events/redisEvents";
 
 class Main {
     private server: FastifyInstance<any>;
+    public redis: Redis;
 
     constructor() {
         this.server = fastify({ logger: false });
+        this.redis = new Redis(process.env.REDIS_URI as string);
 
         this.server.register(ws, {
             options: {
@@ -28,10 +35,16 @@ class Main {
             })
         })
 
+        this.redis.on("connect", connected)
+        this.redis.on("ready", ready)
+        this.redis.on("error", error)
+
+        messageEvent.bind(this)
+
         this.launch()
     }
 
-    async userDisconnected(client: number) {
+    async userDisconnected(client: number): Promise<void> {
         consola.log(client)
     }
 
@@ -47,4 +60,4 @@ class Main {
     }
 }
 
-new Main();
+export const { redis } = new Main();

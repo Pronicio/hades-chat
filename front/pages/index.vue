@@ -65,7 +65,6 @@ function addMessage(text: string, me: boolean) {
 function scrollToBottom(force = false) {
     const out = document.getElementsByClassName('discussion')[0]
     const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 200
-    console.log(isScrolledToBottom);
 
     if (force || isScrolledToBottom) {
         out.scrollTop = out.scrollHeight - out.clientHeight;
