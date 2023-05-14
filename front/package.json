@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "front/dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
@@ -12,5 +12,13 @@
     "@types/node": "^18",
     "nuxt": "^3.4.3",
     "sass": "^1.62.1"
+  },
+  "overrides": {
+    "vue": "latest"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.4.10",
+    "msgpackr": "^1.9.1",
+    "pinia": "^2.0.36"
   }
 }

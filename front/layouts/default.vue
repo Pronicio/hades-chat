@@ -26,7 +26,7 @@
 import { ContactList } from "~/api/types";
 import { cryptoApi } from "~/api/utils";
 
-const contacts: ContactList = [
+const contacts: ContactList = <ContactList>[
     {
         id: "345d6825-4514-46af-9ddd-8a3338f240ce",
         username: "Pablo",
@@ -53,9 +53,10 @@ const contacts: ContactList = [
     }
 ]
 
-onMounted(async () => {
+onBeforeMount(async () => {
     const keys = await cryptoApi.createKeys()
     localStorage.setItem("private", keys.privateKey)
+    localStorage.setItem("public", keys.publicKey)
 
     const pKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
     console.log(pKey);
