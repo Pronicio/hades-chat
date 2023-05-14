@@ -1,17 +1,13 @@
 import { pack } from 'msgpackr';
 
 export class WS {
-    private ws: WebSocket;
+    public ws: WebSocket;
 
     constructor() {
         this.ws = new WebSocket("ws://127.0.0.1:9000/ws");
 
         this.ws.addEventListener("open", (event) => {
             this.init()
-        });
-
-        this.ws.addEventListener("message", (event) => {
-            console.log("Message from server ", event.data);
         });
 
         this.ws.addEventListener("error", (event) => {
