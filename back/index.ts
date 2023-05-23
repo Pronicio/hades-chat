@@ -39,8 +39,6 @@ class Main {
         this.redis.on("ready", ready)
         this.redis.on("error", error)
 
-        messageEvent.bind(this)
-
         this.launch()
     }
 

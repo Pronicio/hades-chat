@@ -1,4 +1,4 @@
-@import url(https://fonts.bunny.net/css?family=fira-code:400,500);
+@import url(https://fonts.bunny.net/css?family=fira-code:400,500|inter:400);
 
 :root {
   --color: #E4FE72;
@@ -13,7 +13,7 @@ body {
   font-weight: 400;
   color: var(--text);
   margin: 0;
-  padding: 1rem;
+  padding: 2rem;
 }
 
 ::-webkit-scrollbar {
