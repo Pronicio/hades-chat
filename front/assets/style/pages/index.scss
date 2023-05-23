@@ -6,6 +6,7 @@
 
   display: flex;
   flex-direction: column;
+  width: 100%;
 
   .discussion {
     display: flex;
@@ -14,8 +15,7 @@
 
     overflow-y: scroll;
     overflow-x: hidden;
-    max-height: 44vh;
-    max-width: 45vw;
+    max-height: 68vh;
 
     .chat {
       display: flex;
