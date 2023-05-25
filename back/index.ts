@@ -4,10 +4,12 @@ import ws, { SocketStream } from '@fastify/websocket'
 import Redis from "ioredis";
 import { consola } from "consola";
 import * as dotenv from 'dotenv'
+
 dotenv.config()
 
 import { messageEvent } from "./events/messageEvent";
 import { connected, error, ready } from "./events/redisEvents";
+import { WebSocketExtended } from "./utils/types";
 
 class Main {
     private server: FastifyInstance<any>;
@@ -26,12 +28,12 @@ class Main {
         this.server.register(async (fastify) => {
             fastify.get('/ws', { websocket: true }, (connection: SocketStream, req: FastifyRequest) => {
                 connection.socket.on('message', (message: Buffer) => messageEvent(message, connection.socket));
-                connection.socket.on('close', (client: number) => this.userDisconnected(client))
+                connection.socket.on('close', (client: number) => this.userDisconnected(client, connection.socket))
                 connection.socket.on('error', (error: Error, client: number) => {
-                    this.userDisconnected(client)
+                    this.userDisconnected(client, connection.socket)
                     consola.error(error)
                 })
-                connection.socket.on('wsClientError', (client: number) => this.userDisconnected(client))
+                connection.socket.on('wsClientError', (client: number) => this.userDisconnected(client, connection.socket))
             })
         })
 
@@ -42,8 +44,8 @@ class Main {
         this.launch()
     }
 
-    async userDisconnected(client: number): Promise<void> {
-        consola.log(client)
+    async userDisconnected(client: number, socket: WebSocketExtended): Promise<void> {
+        await this.redis.del(socket.username)
     }
 
     launch(): void {

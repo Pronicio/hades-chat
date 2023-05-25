@@ -35,6 +35,15 @@ onMounted(() => {
         const packed = await msg.data.arrayBuffer();
         const res = unpack(packed)
 
+        if (res.action === "init") {
+            if (res.success) {
+                //TODO: SUCCESS !!
+                return;
+            }
+
+            //TODO: ERROR !! (username already taken)
+        }
+
         if (res.action === "message") {
             addMessage(res.data.message, false);
         }
