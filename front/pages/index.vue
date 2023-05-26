@@ -34,14 +34,20 @@ onMounted(() => {
     store.ws.ws.onmessage = async (msg) => {
         const packed = await msg.data.arrayBuffer();
         const res = unpack(packed)
+        console.log(res)
 
         if (res.action === "init") {
             if (res.success) {
                 //TODO: SUCCESS !!
+                localStorage.setItem("token", res.token)
                 return;
             }
 
             //TODO: ERROR !! (username already taken)
+        }
+
+        if (res.action === "askFriendResult") {
+            //TODO: askFriendResult
         }
 
         if (res.action === "message") {
@@ -52,7 +58,7 @@ onMounted(() => {
 
 function sendMessage() {
     const msg = message.value;
-    store.ws.sendData(msg, "global")
+    store.ws.sendMessageData(msg, "global")
 
     addMessage(msg, true)
     scrollToBottom(true);

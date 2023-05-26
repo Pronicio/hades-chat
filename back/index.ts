@@ -1,6 +1,8 @@
 import { fastify, FastifyInstance, FastifyRequest } from 'fastify'
 import ws, { SocketStream } from '@fastify/websocket'
+import jwt from '@fastify/jwt'
 
+import { pack } from "msgpackr";
 import Redis from "ioredis";
 import { consola } from "consola";
 import * as dotenv from 'dotenv'
@@ -25,9 +27,16 @@ class Main {
             }
         });
 
-        this.server.register(async (fastify) => {
+        this.server.register(jwt, {
+            secret: process.env.SUPER_TOKEN as string,
+            sign: {
+                expiresIn: process.env.TOKEN_EXPIRE as string
+            }
+        })
+
+        this.server.register(async (fastify: FastifyInstance) => {
             fastify.get('/ws', { websocket: true }, (connection: SocketStream, req: FastifyRequest) => {
-                connection.socket.on('message', (message: Buffer) => messageEvent(message, connection.socket));
+                connection.socket.on('message', (message: Buffer) => messageEvent(message, connection.socket, fastify));
                 connection.socket.on('close', (client: number) => this.userDisconnected(client, connection.socket))
                 connection.socket.on('error', (error: Error, client: number) => {
                     this.userDisconnected(client, connection.socket)
@@ -41,11 +50,21 @@ class Main {
         this.redis.on("ready", ready)
         this.redis.on("error", error)
 
+        this.sendToSomeone = this.sendToSomeone.bind(this)
+
         this.launch()
     }
 
     async userDisconnected(client: number, socket: WebSocketExtended): Promise<void> {
         await this.redis.del(socket.username)
+    }
+
+    async sendToSomeone(data: any, username: string) {
+        this.server.websocketServer.clients.forEach((client: any) => {
+            if (client.readyState === 1 && client.username === username) {
+                client.send(pack(data));
+            }
+        });
     }
 
     launch(): void {
@@ -60,4 +79,4 @@ class Main {
     }
 }
 
-export const { redis } = new Main();
+export const { redis, sendToSomeone } = new Main();

@@ -29,12 +29,30 @@ export class WS {
         }));
     }
 
-    sendData(message: string, who: string) {
+    sendMessageData(message: string, who: string) {
         this.ws.send(pack({
             action: "message",
             data: {
                 who: who,
                 message: message
+            }
+        }));
+    }
+
+    askFriend(username: string) {
+        this.ws.send(pack({
+            action: "askFriend",
+            data: {
+                who: username
+            }
+        }));
+    }
+
+    acceptFriend(username: string) {
+        this.ws.send(pack({
+            action: "askFriendResult",
+            data: {
+                who: username
             }
         }));
     }

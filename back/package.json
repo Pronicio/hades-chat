@@ -11,6 +11,7 @@
   "author": "Pronicio",
   "license": "MIT",
   "dependencies": {
+    "@fastify/jwt": "^7.0.0",
     "@fastify/websocket": "^8.0.0",
     "consola": "^3.1.0",
     "dotenv": "^16.0.3",

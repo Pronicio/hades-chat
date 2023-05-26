@@ -1,14 +1,36 @@
 <template>
-    <main>
-        <contact></contact>
-        <slot></slot>
-    </main>
+    <aside>
+        <div class="header">
+            <div class="menu-icon"></div>
+            <div class="search">
+                <div class="search-icon"></div>
+                <input type="text" placeholder="Search...">
+            </div>
+        </div>
+        <div class="contacts">
+            <div class="contact" v-for="contact in contacts" :key="contact.id" :id="contact.active ? 'active' : ''">
+                <img :src="contact.avatar" :alt="`${contact.username}'s avatar.`" width="75">
+                <div class="infos">
+                    <h4>{{ contact.username }}</h4>
+                    <p>{{ contact.lastTime.message }}</p>
+                </div>
+                <div class="dates">
+                    <p>{{ contact.lastTime.time }}</p>
+                    <div class="badge" :id="contact.badge?.status">{{ contact.badge?.data }}</div>
+                </div>
+            </div>
+        </div>
+        <button @click="store.ws.askFriend('Julia')">AskFriend</button>
+        <button @click="store.ws.acceptFriend('Pronicio')">AcceptFriend</button>
+    </aside>
 </template>
 
 <script setup lang="ts">
-import Contact from "~/components/contact.vue";
 import { ContactList } from "~/api/types";
 import { cryptoApi } from "~/api/utils";
+import { useMainStore } from "~/store";
+
+const store = useMainStore();
 
 const contacts: ContactList = <ContactList>[
     {
@@ -58,19 +80,17 @@ const contacts: ContactList = <ContactList>[
 ]
 
 onBeforeMount(async () => {
+    /*
     const keys = await cryptoApi.createKeys()
     localStorage.setItem("private", keys.privateKey)
     localStorage.setItem("public", keys.publicKey)
 
     const pKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
     console.log(pKey);
+     */
 })
 </script>
 
-<style lang="scss">
-@import '../assets/style/style.scss';
-</style>
-
 <style scoped lang="scss">
-@import '../assets/style/layouts/default.scss';
+@import '../assets/style/components/contact.scss';
 </style>
