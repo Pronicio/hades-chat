@@ -47,7 +47,21 @@ onMounted(() => {
         }
 
         if (res.action === "askFriendResult") {
-            //TODO: askFriendResult
+            const previousContacts = JSON.parse(localStorage.getItem("contacts"));
+            const userAlreadyInContacts = previousContacts.find(contact => {
+                return contact.username === res.who;
+            })
+
+            if (userAlreadyInContacts) return;
+
+            localStorage.setItem("contacts", JSON.stringify([
+                ...previousContacts,
+                {
+                    username: res.who,
+                    publicKey: res.publicKey,
+                    avatar: null
+                }
+            ]))
         }
 
         if (res.action === "message") {

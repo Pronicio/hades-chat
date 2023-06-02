@@ -27,7 +27,6 @@
 
 <script setup lang="ts">
 import { ContactList } from "~/api/types";
-import { cryptoApi } from "~/api/utils";
 import { useMainStore } from "~/store";
 
 const store = useMainStore();
@@ -78,17 +77,6 @@ const contacts: ContactList = <ContactList>[
         active: false
     }
 ]
-
-onBeforeMount(async () => {
-    /*
-    const keys = await cryptoApi.createKeys()
-    localStorage.setItem("private", keys.privateKey)
-    localStorage.setItem("public", keys.publicKey)
-
-    const pKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
-    console.log(pKey);
-     */
-})
 </script>
 
 <style scoped lang="scss">
