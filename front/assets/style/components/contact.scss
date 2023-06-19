@@ -65,6 +65,7 @@ aside {
     gap: 0.15rem;
     padding: 1.25rem;
     max-height: 62vh;
+    overflow: auto;
 
     .contact {
       display: flex;

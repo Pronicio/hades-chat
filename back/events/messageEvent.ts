@@ -75,7 +75,7 @@ export async function messageEvent(message: Buffer, socket: WebSocketExtended, f
                 }, who)
 
                 await sendToSomeone({
-                    action: "askFriendResult",
+                    action: "askFriendResultForReceiver",
                     who: who,
                     publicKey: userSender.publicKey,
                     success: true

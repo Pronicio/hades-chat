@@ -89,6 +89,10 @@ onMounted(() => {
       });
     }
 
+    if (res.action === "askFriendResultForSender") {
+      addSomeoneToContact(res)
+    }
+
     if (res.action === "askFriendRequest") {
       $toast.open({
         message: `${res.who} asks you as friends`,
