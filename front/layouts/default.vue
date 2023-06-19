@@ -116,6 +116,7 @@ function putDefaultsContacts() {
 
 <style lang="scss">
 @import '../assets/style/style.scss';
+@import 'vue-toast-notification/dist/theme-sugar.css';
 </style>
 
 <style scoped lang="scss">

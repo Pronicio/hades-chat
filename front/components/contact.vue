@@ -10,7 +10,8 @@
     <div class="contacts">
       <div :class="`contact ${contact.active ? 'active' : ''}`" v-for="contact in contacts" :key="contact.username"
            :id="contact.username" @click="changeContact(contact.username)">
-        <img :src="contact.avatar || 'https://i.imgur.com/FkZ8zcY.gif'" :alt="`${contact.username}'s avatar.`" width="75">
+        <img :src="contact.avatar || 'https://i.imgur.com/FkZ8zcY.gif'" :alt="`${contact.username}'s avatar.`"
+             width="75">
         <div class="infos">
           <h4>{{ contact.username }}</h4>
           <p>{{ contact.lastTime?.message }}</p>
@@ -21,13 +22,14 @@
         </div>
       </div>
     </div>
-    <div class="addContact">
+    <div class="addContact" @click="modalState = true">
       <img src="../assets/icons/add.svg" alt="AddContact's image">
       <div class="infos">
         <h4>Add a contact</h4>
       </div>
     </div>
   </aside>
+  <modal v-if="modalState" title="Enter the name of the user:" @close="modalState = false" @submit="askFriend"></modal>
 </template>
 
 <script setup lang="ts">
@@ -37,6 +39,7 @@ import { useMainStore } from "~/store";
 
 const store = useMainStore();
 const search = ref()
+const modalState = ref(false)
 
 const contacts = ref(<ContactList>[])
 
@@ -63,6 +66,10 @@ function changeContact(newContact) {
 
     store.currentContact = contact;
   }
+}
+
+function askFriend(username) {
+  store.ws.askFriend(username)
 }
 </script>
 

@@ -60,27 +60,35 @@ export async function messageEvent(message: Buffer, socket: WebSocketExtended, f
 
         if (data.action === "askFriendResult") {
             const who = data.data.who
-            const result = await redis.getBuffer(socket.username)
+            const receiver = await redis.getBuffer(socket.username)
+            const sender = await redis.getBuffer(who)
 
-            if (result) {
-                const user = unpack(result)
+            if (receiver && sender) {
+                const userReceiver = unpack(receiver)
+                const userSender = unpack(sender)
 
                 await sendToSomeone({
                     action: "askFriendResult",
                     who: socket.username,
-                    publicKey: user.publicKey,
+                    publicKey: userReceiver.publicKey,
                     success: true
                 }, who)
+
+                await sendToSomeone({
+                    action: "askFriendResult",
+                    who: who,
+                    publicKey: userSender.publicKey,
+                    success: true
+                }, socket.username)
             }
         }
 
         if (data.data.message && !((/^\s+$/g).test(data.data.message))) {
-            /*
-                const result = await redis.getBuffer(socket.username)
-                if (result) console.log(unpack(result));
-             */
-
-            socket.send(pack(data))
+            await sendToSomeone({
+                action: "message",
+                who: socket.username,
+                message: data.data.message
+            }, data.data.who)
         }
     } catch (e) {
         consola.error(e)

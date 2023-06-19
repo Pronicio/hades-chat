@@ -25,7 +25,6 @@ import { WS } from "~/api/websocket";
 import { useMainStore } from "~/store";
 import { unpack } from "msgpackr";
 import { useToast } from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-sugar.css';
 import { cryptoApi } from "~/api/utils";
 
 const store = useMainStore();
@@ -80,26 +79,31 @@ onMounted(() => {
         });
       }
 
-      const previousContacts = JSON.parse(localStorage.getItem("contacts"));
-      const userAlreadyInContacts = previousContacts.find(contact => {
-        return contact.username === res.who;
-      })
+      addSomeoneToContact(res)
 
-      if (userAlreadyInContacts) return;
+      $toast.open({
+        message: `${res.who} has accepted your friend request`,
+        type: "success",
+        position: "top-right",
+        duration: 5000
+      });
+    }
 
-      localStorage.setItem("contacts", JSON.stringify([
-        ...previousContacts,
-        {
-          username: res.who,
-          publicKey: res.publicKey,
-          avatar: null
+    if (res.action === "askFriendRequest") {
+      $toast.open({
+        message: `${res.who} asks you as friends`,
+        type: "info",
+        position: "top-right",
+        duration: 15000,
+        onClick: () => {
+          store.ws.acceptFriend(res.who)
         }
-      ]))
+      });
     }
 
     if (res.action === "message") {
       const privateKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
-      const decryptedMessage = await cryptoApi.decrypt(res.data.message, privateKey)
+      const decryptedMessage = await cryptoApi.decrypt(res.message, privateKey)
 
       addMessage(decryptedMessage, false);
     }
@@ -147,6 +151,30 @@ function scrollToBottom(force = false) {
   if (force || isScrolledToBottom) {
     out.scrollTop = out.scrollHeight - out.clientHeight;
   }
+}
+
+function addSomeoneToContact(res) {
+  const previousContacts = JSON.parse(localStorage.getItem("contacts"));
+  const userAlreadyInContacts = previousContacts.find(contact => {
+    return contact.username === res.who;
+  })
+
+  if (userAlreadyInContacts) return;
+
+  console.log({
+    username: res.who,
+    publicKey: res.publicKey,
+    avatar: null
+  })
+
+  localStorage.setItem("contacts", JSON.stringify([
+    ...previousContacts,
+    {
+      username: res.who,
+      publicKey: res.publicKey,
+      avatar: null
+    }
+  ]))
 }
 </script>
 
