@@ -1,7 +1,7 @@
 export interface Contact {
-    id: string;
     username: string;
     avatar: string;
+    publicKey: string;
     lastTime: {
         message: string;
         time: string;

@@ -1,103 +1,152 @@
 <template>
-    <section id="app">
-        <div class="discussion">
-            <div class="chat">
-                <p>Hello guysssssssssssssssssssss !</p>
-            </div>
-            <div class="chat me">
-                <p>Hi !!</p>
-            </div>
-            <div class="chat">
-                <p>How are you ?</p>
-            </div>
-        </div>
+  <section id="app">
+    <div class="discussion">
+      <div class="chat">
+        <p>Hello guysssssssssssssssssssss !</p>
+      </div>
+      <div class="chat me">
+        <p>Hi !!</p>
+      </div>
+      <div class="chat">
+        <p>How are you ?</p>
+      </div>
+    </div>
 
-        <form @:submit.prevent="sendMessage" class="input">
-            <input type="text" id="text" name="text" required size="10" placeholder="Say something..."
-                   v-model="message">
-            <div class="send-icon" @click="sendMessage"></div>
-        </form>
-    </section>
+    <form @:submit.prevent="sendMessage">
+      <input type="text" id="text" name="text" required size="10" placeholder="Say something..."
+             v-model="message">
+      <div class="send-icon" @click="sendMessage"></div>
+    </form>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { WS } from "~/api/websocket";
 import { useMainStore } from "~/store";
 import { unpack } from "msgpackr";
+import { useToast } from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-sugar.css';
+import { cryptoApi } from "~/api/utils";
 
 const store = useMainStore();
+const $toast = useToast();
 const message = ref();
 
 onMounted(() => {
-    store.ws = new WS();
+  store.ws = new WS();
 
-    store.ws.ws.onmessage = async (msg) => {
-        const packed = await msg.data.arrayBuffer();
-        const res = unpack(packed)
-        console.log(res)
+  store.ws.ws.onmessage = async (msg) => {
+    const packed = await msg.data.arrayBuffer();
+    const res = unpack(packed)
+    console.log(res)
 
-        if (res.action === "init") {
-            if (res.success) {
-                //TODO: SUCCESS !!
-                localStorage.setItem("token", res.token)
-                return;
-            }
+    if (res.action === "init") {
+      if (res.success) {
+        localStorage.setItem("token", res.token)
 
-            //TODO: ERROR !! (username already taken)
-        }
+        $toast.clear();
 
-        if (res.action === "askFriendResult") {
-            const previousContacts = JSON.parse(localStorage.getItem("contacts"));
-            const userAlreadyInContacts = previousContacts.find(contact => {
-                return contact.username === res.who;
-            })
+        $toast.open({
+          message: "You're connected!",
+          type: "success",
+          position: "top-right",
+          duration: 10000
+        });
 
-            if (userAlreadyInContacts) return;
+        return;
+      }
 
-            localStorage.setItem("contacts", JSON.stringify([
-                ...previousContacts,
-                {
-                    username: res.who,
-                    publicKey: res.publicKey,
-                    avatar: null
-                }
-            ]))
-        }
+      $toast.clear();
+      //localStorage.clear();
 
-        if (res.action === "message") {
-            addMessage(res.data.message, false);
-        }
+      $toast.open({
+        message: 'Username already taken, please refresh page.',
+        type: "error",
+        position: "top-right",
+        duration: 0
+      });
+
+      return store.ws.ws.close()
     }
+
+    if (res.action === "askFriendResult") {
+      if (!res.success) {
+        $toast.clear();
+
+        return $toast.open({
+          message: "The user doesn't exist.",
+          type: "error",
+          position: "top-right"
+        });
+      }
+
+      const previousContacts = JSON.parse(localStorage.getItem("contacts"));
+      const userAlreadyInContacts = previousContacts.find(contact => {
+        return contact.username === res.who;
+      })
+
+      if (userAlreadyInContacts) return;
+
+      localStorage.setItem("contacts", JSON.stringify([
+        ...previousContacts,
+        {
+          username: res.who,
+          publicKey: res.publicKey,
+          avatar: null
+        }
+      ]))
+    }
+
+    if (res.action === "message") {
+      const privateKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
+      const decryptedMessage = await cryptoApi.decrypt(res.data.message, privateKey)
+
+      addMessage(decryptedMessage, false);
+    }
+  }
 })
 
-function sendMessage() {
-    const msg = message.value;
-    store.ws.sendMessageData(msg, "global")
+async function sendMessage() {
+  const msg = message.value;
 
-    addMessage(msg, true)
-    scrollToBottom(true);
+  if (!msg || (/^\s+$/g).test(msg)) {
+    $toast.clear();
+    return $toast.open({
+      message: 'Please enter a non-empty message.',
+      type: "error",
+      position: "top-right"
+    });
+  }
 
-    message.value = null;
+  const publicKey = await cryptoApi.importKey(store.currentContact.publicKey, "public")
+  const encryptedMessage = await cryptoApi.encrypt(msg, publicKey)
+
+  store.ws.sendMessageData(encryptedMessage, store.currentContact.username)
+
+  addMessage(msg, true)
+  scrollToBottom(true);
+
+  message.value = null;
 }
 
 function addMessage(text: string, me: boolean) {
-    const parent = document.querySelector(".discussion")
-    const newChild = document.createElement("div")
+  const parent = document.querySelector(".discussion")
+  const newChild = document.createElement("div")
 
-    parent.appendChild(newChild).classList.add("chat")
-    if (me) newChild.classList.add("me")
+  parent.appendChild(newChild).classList.add("chat")
+  if (me) newChild.classList.add("me")
 
-    newChild.appendChild(document.createElement("p")).innerText = text
-    scrollToBottom();
+  newChild.appendChild(document.createElement("p")).innerText = text
+  scrollToBottom();
 }
 
 function scrollToBottom(force = false) {
-    const out = document.getElementsByClassName('discussion')[0]
-    const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 200
+  const out = document.getElementsByClassName('discussion')[0]
+  const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 200
 
-    if (force || isScrolledToBottom) {
-        out.scrollTop = out.scrollHeight - out.clientHeight;
-    }
+  if (force || isScrolledToBottom) {
+    out.scrollTop = out.scrollHeight - out.clientHeight;
+  }
 }
 </script>
 

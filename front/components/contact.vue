@@ -1,82 +1,69 @@
 <template>
-    <aside>
-        <div class="header">
-            <div class="menu-icon"></div>
-            <div class="search">
-                <div class="search-icon"></div>
-                <input type="text" placeholder="Search...">
-            </div>
+  <aside>
+    <div class="header">
+      <div class="menu-icon"></div>
+      <div class="search">
+        <div class="search-icon"></div>
+        <input type="text" placeholder="Search..." v-model="search">
+      </div>
+    </div>
+    <div class="contacts">
+      <div :class="`contact ${contact.active ? 'active' : ''}`" v-for="contact in contacts" :key="contact.username"
+           :id="contact.username" @click="changeContact(contact.username)">
+        <img :src="contact.avatar || 'https://i.imgur.com/FkZ8zcY.gif'" :alt="`${contact.username}'s avatar.`" width="75">
+        <div class="infos">
+          <h4>{{ contact.username }}</h4>
+          <p>{{ contact.lastTime?.message }}</p>
         </div>
-        <div class="contacts">
-            <div class="contact" v-for="contact in contacts" :key="contact.id" :id="contact.active ? 'active' : ''">
-                <img :src="contact.avatar" :alt="`${contact.username}'s avatar.`" width="75">
-                <div class="infos">
-                    <h4>{{ contact.username }}</h4>
-                    <p>{{ contact.lastTime.message }}</p>
-                </div>
-                <div class="dates">
-                    <p>{{ contact.lastTime.time }}</p>
-                    <div class="badge" :id="contact.badge?.status">{{ contact.badge?.data }}</div>
-                </div>
-            </div>
+        <div class="dates">
+          <p>{{ contact.lastTime?.time }}</p>
+          <div class="badge" :id="contact.badge?.status">{{ contact.badge?.data }}</div>
         </div>
-        <button @click="store.ws.askFriend('Julia')">AskFriend</button>
-        <button @click="store.ws.acceptFriend('Pronicio')">AcceptFriend</button>
-    </aside>
+      </div>
+    </div>
+    <div class="addContact">
+      <img src="../assets/icons/add.svg" alt="AddContact's image">
+      <div class="infos">
+        <h4>Add a contact</h4>
+      </div>
+    </div>
+  </aside>
 </template>
 
 <script setup lang="ts">
+import { stringSimilarity } from "string-similarity-js";
 import { ContactList } from "~/api/types";
 import { useMainStore } from "~/store";
 
 const store = useMainStore();
+const search = ref()
 
-const contacts: ContactList = <ContactList>[
-    {
-        id: "345d6825-4514-46af-9ddd-8a3338f240ce",
-        username: "Pablo",
-        avatar: "https://i.imgur.com/U3yw7ft.jpeg",
-        lastTime: {
-            message: "You: i don't remember 😄 ",
-            time: "18:30"
-        },
-        badge: null,
-        active: false
-    },
-    {
-        id: "b40e9721-9021-403b-bbe8-08eb253077c1",
-        username: "Alice",
-        avatar: "https://i.imgur.com/XfCyTdg.jpeg",
-        lastTime: {
-            message: "Ok, see you later",
-            time: "18:30"
-        },
-        badge: { status: "unread", data: 3 },
-        active: true
-    },
-    {
-        id: "93ff0ca6-fe24-4cf6-91f0-bc996f53578b",
-        username: "Chris",
-        avatar: "https://i.imgur.com/qnT4TJZ.png",
-        lastTime: {
-            message: "I got a job at SpaceX 🎉 🚀  ",
-            time: "19:08"
-        },
-        badge: { status: "read", data: 5 },
-        active: false
-    },
-    {
-        id: "b6b22914-e80e-4b69-9f18-937111582def",
-        username: "John",
-        avatar: "https://i.imgur.com/M0xD1by.png",
-        lastTime: {
-            message: "Table for four, 5PM. Be there.",
-            time: "19:56"
-        },
-        badge: { status: "miss-call" },
-        active: false
-    }
-]
+const contacts = ref(<ContactList>[])
+
+onMounted(() => {
+  contacts.value = JSON.parse(localStorage.getItem("contacts")) as ContactList
+  store.currentContact = contacts.value[0];
+})
+
+watch(search, () => {
+  contacts.value.sort((a, b) => {
+    const compareA = stringSimilarity(a.username.toLowerCase(), search.value)
+    const compareB = stringSimilarity(b.username.toLowerCase(), search.value)
+    return (Math.abs(1 - compareA) - Math.abs(1 - compareB));
+  });
+})
+
+function changeContact(newContact) {
+  const contact = contacts.value.find(el => el.username === newContact)
+  const contactBefore = contacts.value.find(el => el.active)
+
+  if (contact && contactBefore) {
+    contact.active = true;
+    contactBefore.active = false;
+
+    store.currentContact = contact;
+  }
+}
 </script>
 
 <style scoped lang="scss">

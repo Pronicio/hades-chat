@@ -1,5 +1,3 @@
-type Format = "pkcs8" | "spki";
-
 const cryptoApi: any = {
     async createKeys(): Promise<{ privateKey: string, publicKey: string }> {
         const { privateKey, publicKey } = await window.crypto.subtle.generateKey({
@@ -13,33 +11,55 @@ const cryptoApi: any = {
         )
 
         return {
-            privateKey: await this.exportKeys(privateKey, "pkcs8"),
-            publicKey: await this.exportKeys(publicKey, "spki")
+            privateKey: await this.exportKeys(privateKey),
+            publicKey: await this.exportKeys(publicKey)
         }
     },
 
-    async exportKeys(key: CryptoKey, format: Format): Promise<string> {
-        const exported: ArrayBuffer = await window.crypto.subtle.exportKey(format, key);
-        return window.btoa(this._ab2str(exported))
+    async exportKeys(key: CryptoKey): Promise<string> {
+        const keyData = await window.crypto.subtle.exportKey("jwk", key)
+        return window.btoa(JSON.stringify(keyData, null, " "))
     },
 
-    async importKey(data: any, type: KeyType): Promise<CryptoKey> {
+    async importKey(data: string, type: KeyType): Promise<CryptoKey> {
         const usage: KeyUsage = type === "public" ? "encrypt" : "decrypt";
-        const format: KeyFormat = type === "public" ? "spki" : "pkcs8"
 
-        const binaryDerString = window.atob(data);
-        const binaryDer = this._str2ab(binaryDerString);
+        const key = window.atob(data);
+        const jwk = JSON.parse(key)
 
         return window.crypto.subtle.importKey(
-            format,
-            binaryDer,
+            "jwk",
+            jwk,
             {
                 name: "RSA-OAEP",
                 hash: "SHA-256"
             },
             true,
             [ usage ]
+        );
+    },
+
+    async encrypt(message: string, publicKey: CryptoKey) {
+        const enc = new TextEncoder();
+        const data = await window.crypto.subtle.encrypt(
+            {
+                name: "RSA-OAEP",
+            },
+            publicKey,
+            enc.encode(message)
         )
+        return this._ab2str(data)
+    },
+
+    async decrypt(message: string, privateKey: CryptoKey) {
+        const msg = this._str2ab(message)
+        const data = await window.crypto.subtle.decrypt(
+            { name: "RSA-OAEP" },
+            privateKey,
+            msg
+        );
+        const enc = new TextDecoder("utf-8");
+        return enc.decode(data);
     },
 
     _ab2str(buf: ArrayBuffer): string {

@@ -19,6 +19,8 @@
   "dependencies": {
     "@pinia/nuxt": "^0.4.10",
     "msgpackr": "^1.9.1",
-    "pinia": "^2.0.36"
+    "pinia": "^2.0.36",
+    "string-similarity-js": "^2.1.4",
+    "vue-toast-notification": "^3.1.1"
   }
 }

@@ -3,11 +3,12 @@ aside {
   flex-direction: column;
   align-self: flex-start;
 
+  height: calc(100vh - 4rem);
   max-width: 25%;
   min-width: 23rem;
 
   border: 2px solid rgba(228, 254, 114, 0.04);
-  border-radius: 12px;
+  border-radius: 1.5rem;
   margin-right: 2rem;
 
   .header {
@@ -16,7 +17,7 @@ aside {
     align-items: center;
 
     background: rgba(255, 255, 255, 0.06);
-    border-radius: 12px 12px 0 0;
+    border-radius: 1.5rem 1.5rem 0 0;
     padding: 1.25rem 2rem;
 
     .menu-icon {
@@ -63,6 +64,7 @@ aside {
     flex-direction: column;
     gap: 0.15rem;
     padding: 1.25rem;
+    max-height: 62vh;
 
     .contact {
       display: flex;
@@ -134,9 +136,27 @@ aside {
       }
     }
 
-    #active {
+    .active {
       background: rgba(255, 255, 255, 0.06);
       border-radius: 12px;
     }
+  }
+
+  .addContact {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    border: 0.5px solid #F5AD72;
+    border-radius: 1.5rem;
+    gap: .5rem;
+    cursor: pointer;
+
+    padding: 0 12px;
+    margin: auto 1.25rem 1.5rem;
+  }
+
+  @media (max-width: 800px) {
+    display: none;
   }
 }
