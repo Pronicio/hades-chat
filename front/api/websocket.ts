@@ -4,7 +4,7 @@ export class WS {
     public ws: WebSocket;
 
     constructor() {
-        this.ws = new WebSocket(process.env.WEB_SOCKET_API as string);
+        this.ws = new WebSocket("wss://hades-chat-v2.onrender.com/ws");
 
         this.ws.addEventListener("open", (event) => {
             this.init()
