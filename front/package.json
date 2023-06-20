@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.10",
+    "mitt": "^3.0.0",
     "msgpackr": "^1.9.1",
     "pinia": "^2.0.36",
     "string-similarity-js": "^2.1.4",

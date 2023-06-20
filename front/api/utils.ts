@@ -79,3 +79,19 @@ const cryptoApi: any = {
 }
 
 export { cryptoApi }
+
+export function getDate(time: string) {
+    if (!time) return
+    const date = new Date(parseInt(time));
+
+    const today = new Date()
+    const isToday = date.getDate() == today.getDate()
+        && date.getMonth() == today.getMonth()
+        && date.getFullYear() == today.getFullYear();
+
+    if (isToday) {
+        return `${date.getHours()}:${date.getMinutes()}`
+    }
+
+    return `${date.getDay()}/${date.getMonth()}`
+}

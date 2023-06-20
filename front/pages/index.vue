@@ -1,20 +1,14 @@
 <template>
   <section id="app">
     <div class="discussion">
-      <div class="chat">
-        <p>Hello guysssssssssssssssssssss !</p>
-      </div>
-      <div class="chat me">
-        <p>Hi !!</p>
-      </div>
-      <div class="chat">
-        <p>How are you ?</p>
+      <div :class="`chat ${msg.username === 'me' ? 'me' : ''}`" v-for="msg in messages" :key="msg.content">
+        <p>{{ msg.content }}</p>
       </div>
     </div>
 
     <form @:submit.prevent="sendMessage">
       <input type="text" id="text" name="text" required size="10" placeholder="Say something..."
-             v-model="message">
+             v-model="input">
       <div class="send-icon" @click="sendMessage"></div>
     </form>
   </section>
@@ -23,15 +17,19 @@
 <script setup lang="ts">
 import { WS } from "~/api/websocket";
 import { useMainStore } from "~/store";
+import { cryptoApi } from "~/api/utils";
 import { unpack } from "msgpackr";
 import { useToast } from 'vue-toast-notification';
-import { cryptoApi } from "~/api/utils";
+import { Message, MessageList } from "~/api/types";
 
 const store = useMainStore();
 const $toast = useToast();
-const message = ref();
+const { $emit, $listen } = useNuxtApp()
 
-onMounted(() => {
+const input = ref();
+const messages = ref([] as MessageList)
+
+onMounted(async () => {
   store.ws = new WS();
 
   store.ws.ws.onmessage = async (msg) => {
@@ -89,7 +87,7 @@ onMounted(() => {
       });
     }
 
-    if (res.action === "askFriendResultForSender") {
+    if (res.action === "askFriendResultForReceiver") {
       addSomeoneToContact(res)
     }
 
@@ -109,13 +107,50 @@ onMounted(() => {
       const privateKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
       const decryptedMessage = await cryptoApi.decrypt(res.message, privateKey)
 
-      addMessage(decryptedMessage, false);
+      if (res.who === store.currentContact.username) {
+        await addMessage(decryptedMessage, res.who)
+      } else {
+        const savedChat = localStorage.getItem(res.who)
+
+        if (!savedChat) {
+          return localStorage.setItem(res.who, JSON.stringify([]))
+        }
+
+        const timeNow = Date.now()
+
+        $emit('contact:edit', {
+          username: res.who,
+          lastTime: {
+            message: decryptedMessage,
+            time: timeNow
+          },
+          badge: {
+            status: "unread",
+            data: 1
+          }
+        })
+
+        const blend = JSON.parse(savedChat)
+        blend.push({
+          username: res.who,
+          content: decryptedMessage,
+          date: timeNow
+        })
+
+        localStorage.setItem(res.who, JSON.stringify(blend))
+      }
     }
   }
+
+  await changeChat(store.currentContact.username)
+})
+
+$listen("user:change", async (user) => {
+  await changeChat(user.username)
 })
 
 async function sendMessage() {
-  const msg = message.value;
+  const msg = input.value;
 
   if (!msg || (/^\s+$/g).test(msg)) {
     $toast.clear();
@@ -131,21 +166,36 @@ async function sendMessage() {
 
   store.ws.sendMessageData(encryptedMessage, store.currentContact.username)
 
-  addMessage(msg, true)
+  await addMessage(msg, "me")
   scrollToBottom(true);
 
-  message.value = null;
+  input.value = null;
 }
 
-function addMessage(text: string, me: boolean) {
-  const parent = document.querySelector(".discussion")
-  const newChild = document.createElement("div")
+async function addMessage(msg: string, username: string) {
+  const timeNow = Date.now()
 
-  parent.appendChild(newChild).classList.add("chat")
-  if (me) newChild.classList.add("me")
+  const data = {
+    username: username,
+    content: msg,
+    date: timeNow
+  } as Message
 
-  newChild.appendChild(document.createElement("p")).innerText = text
-  scrollToBottom();
+  messages.value.push(data)
+
+  if (username !== "me") {
+    $emit('contact:edit', {
+      username: username,
+      lastTime: {
+        message: msg,
+        time: timeNow
+      }
+    })
+  }
+
+  localStorage.setItem(username, JSON.stringify(messages.value))
+
+  await nextTick(); scrollToBottom();
 }
 
 function scrollToBottom(force = false) {
@@ -165,7 +215,7 @@ function addSomeoneToContact(res) {
 
   if (userAlreadyInContacts) return;
 
-  console.log({
+  const newUser = ({
     username: res.who,
     publicKey: res.publicKey,
     avatar: null
@@ -173,12 +223,22 @@ function addSomeoneToContact(res) {
 
   localStorage.setItem("contacts", JSON.stringify([
     ...previousContacts,
-    {
-      username: res.who,
-      publicKey: res.publicKey,
-      avatar: null
-    }
+    newUser
   ]))
+
+  $emit('contact:new', newUser)
+}
+
+async function changeChat(username) {
+  const savedChat = localStorage.getItem(username)
+
+  if (!savedChat) {
+    localStorage.setItem(username, JSON.stringify([]))
+    return messages.value = [] as MessageList
+  }
+
+  messages.value = JSON.parse(savedChat)
+  await nextTick(); scrollToBottom(true);
 }
 </script>
 
