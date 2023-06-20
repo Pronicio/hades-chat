@@ -4,9 +4,7 @@ export class WS {
     public ws: WebSocket;
 
     constructor() {
-        const runtimeConfig = useRuntimeConfig()
-
-        this.ws = new WebSocket(runtimeConfig.webSocketApi);
+        this.ws = new WebSocket(process.env.WEB_SOCKET_API as string);
 
         this.ws.addEventListener("open", (event) => {
             this.init()
