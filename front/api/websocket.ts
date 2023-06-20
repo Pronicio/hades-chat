@@ -4,7 +4,9 @@ export class WS {
     public ws: WebSocket;
 
     constructor() {
-        this.ws = new WebSocket("ws://127.0.0.1:9000/ws");
+        const runtimeConfig = useRuntimeConfig()
+
+        this.ws = new WebSocket(runtimeConfig.webSocketApi);
 
         this.ws.addEventListener("open", (event) => {
             this.init()
