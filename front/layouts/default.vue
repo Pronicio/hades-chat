@@ -4,24 +4,16 @@
       <contact></contact>
       <slot></slot>
     </main>
-    <section v-else>
-      <h1>What is your name ?</h1>
-      <form v-on:submit.prevent="registerUser">
-        <input type="text" minlength="4" maxlength="24" v-model="username">
-        <button type="submit">Validate !</button>
-      </form>
-    </section>
+    <modal v-else title="What is your name ?" @submit="registerUser"></modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { cryptoApi } from "~/api/utils";
+import { cryptoApi } from "~/api/crypto";
 import { ContactList } from "~/api/types";
 
 const created = ref(false)
 const mounted = ref(false)
-
-const username = ref()
 
 onBeforeMount(() => {
   const userExist = localStorage.getItem("username")
@@ -40,17 +32,15 @@ onMounted(() => {
   }
 })
 
-async function registerUser() {
-  if (!username.value) return;
-
+async function registerUser(username) {
   const regex = /\w{4,24}/g
-  const test = regex.exec(username.value)
+  const test = regex.exec(username)
 
   if (test) {
     const username = test[0]
     localStorage.setItem("username", username);
-    putDefaultsContacts()
 
+    putDefaultsContacts();
     await genKey();
 
     created.value = true;

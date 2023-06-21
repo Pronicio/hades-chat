@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { WS } from "~/api/websocket";
 import { useMainStore } from "~/store";
-import { cryptoApi } from "~/api/utils";
+import { cryptoApi } from "~/api/crypto";
 import { unpack } from "msgpackr";
 import { useToast } from 'vue-toast-notification';
 import { Message, MessageList } from "~/api/types";
@@ -25,12 +25,13 @@ import { Message, MessageList } from "~/api/types";
 const store = useMainStore();
 const $toast = useToast();
 const { $emit, $listen } = useNuxtApp()
+const runtimeConfig = useRuntimeConfig()
 
 const input = ref();
 const messages = ref([] as MessageList)
 
 onMounted(async () => {
-  store.ws = new WS();
+  store.ws = new WS(runtimeConfig.public.websocketApi);
 
   store.ws.ws.onmessage = async (msg) => {
     const packed = await msg.data.arrayBuffer();
@@ -110,10 +111,11 @@ onMounted(async () => {
       if (res.who === store.currentContact.username) {
         await addMessage(decryptedMessage, res.who)
       } else {
-        const savedChat = localStorage.getItem(res.who)
+        let savedChat = localStorage.getItem(res.who)
 
         if (!savedChat) {
-          return localStorage.setItem(res.who, JSON.stringify([]))
+          localStorage.setItem(res.who, JSON.stringify([]))
+          savedChat = localStorage.getItem(res.who)
         }
 
         const timeNow = Date.now()
@@ -142,11 +144,11 @@ onMounted(async () => {
     }
   }
 
-  await changeChat(store.currentContact.username)
+  await changeChat()
 })
 
-$listen("user:change", async (user) => {
-  await changeChat(user.username)
+$listen("user:change", async () => {
+  await changeChat()
 })
 
 async function sendMessage() {
@@ -193,9 +195,12 @@ async function addMessage(msg: string, username: string) {
     })
   }
 
-  localStorage.setItem(username, JSON.stringify(messages.value))
+  localStorage.setItem(store.currentContact.username, JSON.stringify(messages.value))
 
-  await nextTick(); scrollToBottom();
+  await nextTick();
+  scrollToBottom();
+
+  $emit("contact:move", store.currentContact)
 }
 
 function scrollToBottom(force = false) {
@@ -229,7 +234,8 @@ function addSomeoneToContact(res) {
   $emit('contact:new', newUser)
 }
 
-async function changeChat(username) {
+async function changeChat() {
+  const username = store.currentContact.username;
   const savedChat = localStorage.getItem(username)
 
   if (!savedChat) {
@@ -238,7 +244,8 @@ async function changeChat(username) {
   }
 
   messages.value = JSON.parse(savedChat)
-  await nextTick(); scrollToBottom(true);
+  await nextTick();
+  scrollToBottom(true);
 }
 </script>
 

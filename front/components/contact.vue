@@ -47,15 +47,7 @@ const contacts = ref(<ContactList>[])
 
 onMounted(() => {
   contacts.value = JSON.parse(localStorage.getItem("contacts")) as ContactList
-  store.currentContact = contacts.value[0];
-
-  const contact = contacts.value.find(el => el.username === contacts.value[0].username)
-  const contactBefore = contacts.value.find(el => el.active)
-
-  if (contact) {
-    contact.active = true;
-    if (contactBefore) contactBefore.active = false;
-  }
+  store.currentContact = contacts.value.find(el => el.active)
 })
 
 watch(search, () => {
@@ -71,7 +63,7 @@ $listen('contact:new', (user) => {
   changeContact(user)
 })
 
-$listen('contact:edit', (user) => {
+$listen('contact:edit', async (user) => {
   const contact = contacts.value.find(el => el.username === user.username)
 
   if (contact) {
@@ -83,20 +75,26 @@ $listen('contact:edit', (user) => {
 
     contacts.value[index] = { ...contact, ...user };
 
-    contacts.value.splice(index, 1)
-    contacts.value.unshift(contact)
-
-    localStorage.setItem("contacts", JSON.stringify(contacts.value))
+    $emit("contact:move", contact)
+    await nextTick(); localStorage.setItem("contacts", JSON.stringify(contacts.value))
   }
+})
+
+$listen('contact:move', (contact) => {
+  contacts.value.sort(function (x, y) {
+    return x.username === contact.username ? -1 : y.username === contact.username ? 1 : 0;
+  });
 })
 
 function changeContact(newContact) {
   const contact = contacts.value.find(el => el.username === newContact.username)
   const contactBefore = contacts.value.find(el => el.active)
 
-  if (contact) {
+  if (contact && contactBefore) {
+    if (contact.username === contactBefore.username) return;
+
     contact.active = true;
-    if (contactBefore) contactBefore.active = false;
+    contactBefore.active = false;
 
     if (contact.badge) {
       const index = contacts.value.indexOf(contact)
@@ -107,7 +105,7 @@ function changeContact(newContact) {
     }
 
     store.currentContact = contact;
-    $emit("user:change", contact)
+    $emit("user:change", true)
   }
 }
 

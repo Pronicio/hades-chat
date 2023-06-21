@@ -21,7 +21,7 @@ function sendForm() {
   if (!text.value || (/^\s+$/g).test(text.value)) {
     $toast.clear();
     return $toast.open({
-      message: 'Please enter a non-empty message.',
+      message: 'Please enter a non-empty text.',
       type: "error",
       position: "top-right"
     });
