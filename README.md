@@ -24,6 +24,8 @@ npm install
 
 ### Development :
 
+For development, in the `./front` folder, duplicate `.env.production` and rename it to `.env.local` and replace the websocket url with the local url obtained by launching the backend.
+
 ```bash
 # In the ./front/ folder :
 npm run front/dev
