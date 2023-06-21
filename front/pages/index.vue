@@ -1,11 +1,11 @@
 <template>
   <section id="app">
+    <Header @back="toggleMobileView"></Header>
     <div class="discussion">
       <div :class="`chat ${msg.username === 'me' ? 'me' : ''}`" v-for="msg in messages" :key="msg.content">
         <p>{{ msg.content }}</p>
       </div>
     </div>
-
     <form @:submit.prevent="sendMessage">
       <input type="text" id="text" name="text" required size="10" placeholder="Say something..."
              v-model="input">
@@ -36,7 +36,6 @@ onMounted(async () => {
   store.ws.ws.onmessage = async (msg) => {
     const packed = await msg.data.arrayBuffer();
     const res = unpack(packed)
-    console.log(res)
 
     if (res.action === "init") {
       if (res.success) {
@@ -47,7 +46,7 @@ onMounted(async () => {
         $toast.open({
           message: "You're connected!",
           type: "success",
-          position: "top-right",
+          position: "top",
           duration: 10000
         });
 
@@ -60,7 +59,7 @@ onMounted(async () => {
       $toast.open({
         message: 'Username already taken, please refresh page.',
         type: "error",
-        position: "top-right",
+        position: "top",
         duration: 0
       });
 
@@ -74,7 +73,7 @@ onMounted(async () => {
         return $toast.open({
           message: "The user doesn't exist.",
           type: "error",
-          position: "top-right"
+          position: "top"
         });
       }
 
@@ -83,7 +82,7 @@ onMounted(async () => {
       $toast.open({
         message: `${res.who} has accepted your friend request`,
         type: "success",
-        position: "top-right",
+        position: "top",
         duration: 5000
       });
     }
@@ -96,7 +95,7 @@ onMounted(async () => {
       $toast.open({
         message: `${res.who} asks you as friends`,
         type: "info",
-        position: "top-right",
+        position: "top",
         duration: 15000,
         onClick: () => {
           store.ws.acceptFriend(res.who)
@@ -149,6 +148,7 @@ onMounted(async () => {
 
 $listen("user:change", async () => {
   await changeChat()
+  if (document.documentElement.clientWidth <= 800) toggleMobileView(false)
 })
 
 async function sendMessage() {
@@ -159,7 +159,7 @@ async function sendMessage() {
     return $toast.open({
       message: 'Please enter a non-empty message.',
       type: "error",
-      position: "top-right"
+      position: "top"
     });
   }
 
@@ -246,6 +246,18 @@ async function changeChat() {
   messages.value = JSON.parse(savedChat)
   await nextTick();
   scrollToBottom(true);
+}
+
+async function toggleMobileView(retract: boolean) {
+  if (retract) {
+    (document.querySelector("aside") as HTMLElement).style.display = "block";
+    (document.getElementById("app") as HTMLElement).style.display = "none";
+  } else {
+    (document.querySelector("aside") as HTMLElement).style.display = "none";
+    (document.getElementById("app") as HTMLElement).style.display = "block";
+  }
+
+  await nextTick(); scrollToBottom(true)
 }
 </script>
 

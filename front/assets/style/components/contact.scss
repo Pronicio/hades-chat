@@ -39,8 +39,9 @@ aside {
 
       .search-icon {
         background: url("/assets/icons/search.svg") no-repeat;
-        width: 24px;
-        height: 24px;
+        background-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
         margin-right: 0.5rem;
         cursor: pointer;
       }
@@ -158,6 +159,8 @@ aside {
   }
 
   @media (max-width: 800px) {
-    display: none;
+    height: calc(100vh - 2rem);
+    margin: 0;
+    max-width: 100%;
   }
 }

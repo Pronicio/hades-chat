@@ -4,17 +4,18 @@
   justify-content: flex-end;
 
   width: 100%;
-  height: calc(100vh - 8rem);
+  height: calc(100vh - 4rem);
 
   background: rgba(255, 255, 255, 0.02);
   border: 2px solid rgba(228, 254, 114, 0.04);
   border-radius: 1.5rem;
-  padding: 2rem;
+  /*padding: 2rem;*/
 
   .discussion {
     display: flex;
     flex-direction: column;
     padding: 10px;
+    margin: 0 2rem 0 2rem;
 
     overflow-y: scroll;
     overflow-x: hidden;
@@ -53,6 +54,7 @@
     background: rgba(245, 173, 114, 0.06);
     border-radius: 50px;
     padding-right: 15px;
+    margin: 0 2rem 2rem;
 
     input {
       width: 100%;
@@ -74,5 +76,10 @@
       filter: var(--filter);
       cursor: pointer;
     }
+  }
+
+  @media (max-width: 800px) {
+    display: none;
+    height: calc(100vh - 2rem);
   }
 }
