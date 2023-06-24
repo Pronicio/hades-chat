@@ -91,7 +91,12 @@ function changeContact(newContact) {
   const contactBefore = contacts.value.find(el => el.active)
 
   if (contact && contactBefore) {
-    if (contact.username === contactBefore.username) return;
+    if (contact.username === contactBefore.username) {
+      if (document.documentElement.clientWidth <= 800) {
+        return $emit("mobile:user:toggle", contact)
+      }
+      return;
+    }
 
     contact.active = true;
     contactBefore.active = false;

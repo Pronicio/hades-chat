@@ -3,12 +3,12 @@
     <Header @back="toggleMobileView"></Header>
     <div class="discussion">
       <div :class="`chat ${msg.username === 'me' ? 'me' : ''}`" v-for="msg in messages" :key="msg.content">
-        <p>{{ msg.content }}</p>
+        <p v-html="msg.content.replace(/\n/g, '<br>')"></p>
       </div>
     </div>
     <form @:submit.prevent="sendMessage">
-      <input type="text" id="text" name="text" required size="10" placeholder="Say something..."
-             v-model="input">
+      <textarea id="text" name="text" required placeholder="Say something..." rows="1" wrap="soft"
+                v-model="input" @keydown="write"/>
       <div class="send-icon" @click="sendMessage"></div>
     </form>
   </section>
@@ -106,6 +106,7 @@ onMounted(async () => {
     if (res.action === "message") {
       const privateKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
       const decryptedMessage = await cryptoApi.decrypt(res.message, privateKey)
+      console.log(decryptedMessage);
 
       if (res.who === store.currentContact.username) {
         await addMessage(decryptedMessage, res.who)
@@ -148,8 +149,26 @@ onMounted(async () => {
 
 $listen("user:change", async () => {
   await changeChat()
-  if (document.documentElement.clientWidth <= 800) toggleMobileView(false)
+  if (document.documentElement.clientWidth <= 800) await toggleMobileView(false)
 })
+
+$listen("mobile:user:toggle", async () => {
+  await toggleMobileView(false)
+})
+
+function write(event) {
+  const element = document.querySelector("textarea")
+
+  setTimeout(function () {
+    element.style.cssText = 'height:auto; padding:0';
+    element.style.cssText = 'height:' + element.scrollHeight + 'px';
+  }, 0);
+
+  if (event.keyCode == 13 && !event.shiftKey) {
+    event.preventDefault()
+    sendMessage()
+  }
+}
 
 async function sendMessage() {
   const msg = input.value;
@@ -172,6 +191,7 @@ async function sendMessage() {
   scrollToBottom(true);
 
   input.value = null;
+  document.querySelector("textarea").style.cssText = 'height:auto;';
 }
 
 async function addMessage(msg: string, username: string) {
@@ -254,10 +274,11 @@ async function toggleMobileView(retract: boolean) {
     (document.getElementById("app") as HTMLElement).style.display = "none";
   } else {
     (document.querySelector("aside") as HTMLElement).style.display = "none";
-    (document.getElementById("app") as HTMLElement).style.display = "block";
+    (document.getElementById("app") as HTMLElement).style.display = "flex";
   }
 
-  await nextTick(); scrollToBottom(true)
+  await nextTick();
+  scrollToBottom(true)
 }
 </script>
 
