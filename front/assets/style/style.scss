@@ -15,9 +15,19 @@ body {
   margin: 0;
   padding: 2rem;
   overflow: hidden;
+}
 
-  @media (max-width: 800px) {
-    padding: 0.5rem;
+@media (max-width: 800px) {
+  body {
+    padding: 0;
+  }
+
+  aside, .header, #app {
+    border-radius: 0 !important;
+  }
+
+  #main, aside, #app {
+    height: 100vh !important;
   }
 }
 
