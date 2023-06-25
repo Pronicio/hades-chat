@@ -106,7 +106,6 @@ onMounted(async () => {
     if (res.action === "message") {
       const privateKey = await cryptoApi.importKey(localStorage.getItem("private"), "private")
       const decryptedMessage = await cryptoApi.decrypt(res.message, privateKey)
-      console.log(decryptedMessage);
 
       if (res.who === store.currentContact.username) {
         await addMessage(decryptedMessage, res.who)
