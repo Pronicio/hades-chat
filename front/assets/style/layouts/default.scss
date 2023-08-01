@@ -1,0 +1,61 @@
+#__nuxt {
+  display: flex;
+  flex-direction: column;
+
+  #main {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: calc(100vh - 4rem);
+
+    main {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    section {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+
+      background: rgba(255, 255, 255, 0.02);
+      border: 2px solid rgba(228, 254, 114, 0.04);
+      border-radius: 24px;
+      padding: 2rem;
+
+      h1 {
+        align-self: center;
+        margin: 0;
+      }
+
+      input, button {
+        border: none;
+        outline: none;
+        padding: 14px 16px;
+
+        background: rgba(245, 173, 114, 0.06);
+        border-radius: 50px;
+        margin-top: 2rem;
+        width: calc(100% - 2rem);
+
+        font-family: "Fira Code", sans-serif;
+        color: var(--text);
+        text-indent: 12px;
+      }
+
+      button {
+        width: 100%;
+        cursor: pointer;
+        background: rgba(12, 179, 127, 0.1);
+        transition-duration: 180ms;
+
+        &:hover {
+          background: rgba(12, 179, 127, 0.3);
+        }
+      }
+    }
+  }
+}

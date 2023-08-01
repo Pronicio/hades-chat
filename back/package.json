@@ -1,24 +1,27 @@
 {
   "name": "back",
-  "version": "0.1.0",
-  "description": "The backend of the app.",
-  "main": "main.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "back/dev": "nodemon .",
-    "start": "node ."
+    "build": "tsc -p tsconfig.json",
+    "start": "node index.js",
+    "back/dev": "ts-node index.ts"
   },
   "author": "Pronicio",
   "license": "MIT",
-  "type": "module",
   "dependencies": {
-    "@fastify/cors": "^8.1.0",
-    "@fastify/multipart": "^7.2.0",
-    "@fastify/websocket": "^7.1.0",
-    "axios": "^0.27.2",
-    "dotenv": "^16.0.2",
-    "fastify": "^4.6.0",
-    "form-data": "^4.0.0",
-    "jsonwebtoken": "^8.5.1",
-    "redis": "^4.3.1"
+    "@fastify/jwt": "^7.0.0",
+    "@fastify/websocket": "^8.0.0",
+    "consola": "^3.1.0",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.17.0",
+    "ioredis": "^5.3.2",
+    "msgpackr": "^1.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.1.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   }
 }

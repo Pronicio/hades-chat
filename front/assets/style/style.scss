@@ -1,0 +1,60 @@
+@import url(https://fonts.bunny.net/css?family=fira-code:400,500|inter:400);
+
+:root {
+  --color: #E4FE72;
+  --background: #171717;
+  --text: #FFFFFF;
+  --filter: invert(100%) sepia(75%) saturate(1394%) hue-rotate(26deg) brightness(125%) contrast(98%);
+}
+
+body {
+  background: var(--background);
+  font-family: "Fira Code", sans-serif;
+  font-weight: 400;
+  color: var(--text);
+  margin: 0;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+@media (max-width: 800px) {
+  body {
+    padding: 0;
+  }
+
+  aside, .header, #app {
+    border-radius: 0 !important;
+  }
+
+  #main, aside, #app {
+    height: 100vh !important;
+  }
+}
+
+::-webkit-scrollbar {
+  height: 3px;
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color);
+  border-radius: 4px;
+}
+
+.v-toast__item--error {
+  background: rgba(251, 117, 116, 0.2);
+  border: 0.5px solid #FB7574;
+  border-radius: 12px;
+}
+
+.v-toast__item--success {
+  background: rgba(12, 179, 127, 0.2);
+  border: 0.5px solid #0CB37F;
+  border-radius: 12px;
+}
+
+.v-toast__item--info {
+  background: rgba(228, 254, 114, 0.2);
+  border: 0.5px solid #E4FE72;
+  border-radius: 12px;
+}

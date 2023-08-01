@@ -1,0 +1,95 @@
+#app {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  width: 100%;
+  height: calc(100vh - 4rem);
+
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid rgba(228, 254, 114, 0.04);
+  border-radius: 1.5rem;
+  /*padding: 2rem;*/
+
+  .discussion {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin: 0 2rem 0 2rem;
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+    max-height: 74vh;
+
+    .chat {
+      display: flex;
+      flex-direction: row;
+      overflow-wrap: break-word;
+
+      p {
+        padding: 14px 16px;
+        margin: 5px;
+        background: rgba(245, 173, 114, 0.04);
+        border-radius: 25px;
+        max-width: 40vw;
+
+        @media (max-width: 800px) {
+          max-width: 45vw;
+        }
+      }
+
+      &.me {
+        align-self: flex-end;
+
+        p {
+          background: rgba(12, 179, 127, 0.1);
+        }
+      }
+    }
+
+    &::-webkit-scrollbar-track{
+      margin: 8px;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgba(245, 173, 114, 0.06);
+    border-radius: 30px;
+    padding-right: 15px;
+    margin: 0 2rem 2rem;
+
+    textarea {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: none;
+      margin: 14px 16px;
+
+      max-height: 120px !important;
+
+      font-family: "Fira Code", sans-serif;
+      color: var(--text);
+      overflow: auto;
+      resize: none;
+    }
+
+    .send-icon {
+      background: url("/assets/icons/send.svg") no-repeat;
+      width: 24px;
+      height: 24px;
+
+      filter: var(--filter);
+      cursor: pointer;
+    }
+  }
+
+  @media (max-width: 800px) {
+    display: none;
+    height: calc(100vh - 2rem);
+  }
+}

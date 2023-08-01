@@ -1,0 +1,77 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 1.5rem 1.5rem 0 0;
+  padding: 1rem 2rem;
+  margin-bottom: auto;
+
+  .left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+
+    .back-icon {
+      display: none;
+
+      background: url("/assets/icons/back.svg");
+      background-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+      cursor: pointer;
+
+      @media (max-width: 800px) {
+        display: block;
+      }
+    }
+
+    img {
+      border-radius: 100%;
+      object-fit: cover;
+      width: 45px;
+      height: 45px;
+    }
+
+    p {
+      font-weight: 500;
+      font-size: 1.2rem;
+      color: #FFFFFF;
+      margin: 0;
+    }
+  }
+
+  .right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+
+    .search-icon {
+      background: url("/assets/icons/search.svg");
+      background-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      cursor: not-allowed;
+    }
+
+    .more-icon {
+      background: url("/assets/icons/more-circle.svg");
+      background-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      cursor: not-allowed;
+    }
+
+    .call-icon {
+      background: url("/assets/icons/call.svg");
+      background-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      cursor: not-allowed;
+    }
+  }
+}
