@@ -39,11 +39,7 @@ onMounted(async () => {
 
     if (res.action === "init") {
       if (res.success) {
-        localStorage.setItem("token", res.token)
-
-        $toast.clear();
-
-        $toast.open({
+        $toast.clear(); $toast.open({
           message: "You're connected!",
           type: "success",
           position: "top",
@@ -53,10 +49,7 @@ onMounted(async () => {
         return;
       }
 
-      $toast.clear();
-      //localStorage.clear();
-
-      $toast.open({
+      $toast.clear(); $toast.open({
         message: 'Username already taken, please refresh page.',
         type: "error",
         position: "top",

@@ -20,24 +20,14 @@ export async function messageEvent(message: Buffer, socket: WebSocketExtended, f
                     publicKey: data.data.publicKey
                 }))
 
-                const token = fastify.jwt.sign({
-                    username: socket.username
-                })
-
                 return socket.send(pack({
-                    action: "init",
-                    token: token,
-                    success: true,
+                    action: "init", success: true,
                 }))
             } else {
                 socket.send(pack({
                     action: "init", success: false,
                 }))
             }
-        }
-
-        if (data.action === "restore") {
-            //TODO: Restore.
         }
 
         if (data.action === "askFriend") {
