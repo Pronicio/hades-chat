@@ -1,6 +1,5 @@
 import { fastify, FastifyInstance, FastifyRequest } from 'fastify'
 import ws, { SocketStream } from '@fastify/websocket'
-import jwt from '@fastify/jwt'
 
 import { pack } from "msgpackr";
 import Redis from "ioredis";
@@ -26,13 +25,6 @@ class Main {
                 maxPayload: 1048576,
             }
         });
-
-        this.server.register(jwt, {
-            secret: process.env.SUPER_TOKEN as string,
-            sign: {
-                expiresIn: process.env.TOKEN_EXPIRE as string
-            }
-        })
 
         this.server.register(async (fastify: FastifyInstance) => {
             fastify.get('/ws', { websocket: true }, (connection: SocketStream, req: FastifyRequest) => {
@@ -68,7 +60,9 @@ class Main {
     }
 
     launch(): void {
-        this.server.listen({ port: 9000, host: "0.0.0.0" }, (err, address): void => {
+        const PORT = parseInt(process.env.PORT as string)
+
+        this.server.listen({ port: PORT, host: "0.0.0.0" }, (err, address): void => {
             if (err) {
                 consola.error(err)
                 process.exit(1)
