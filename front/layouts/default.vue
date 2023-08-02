@@ -17,11 +17,7 @@ const mounted = ref(false)
 
 onBeforeMount(() => {
   const userExist = localStorage.getItem("username")
-  const userTokenExist = localStorage.getItem("token")
-
-  if (userExist && userTokenExist) {
-    created.value = true;
-  }
+  if (userExist) created.value = true;
 
   mounted.value = true
 })
